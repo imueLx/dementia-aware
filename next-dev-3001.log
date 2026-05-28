@@ -1,0 +1,9 @@
+
+> dementia-aware@0.1.0 dev
+> next dev --port 3001
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.254.123:3001
+✓ Ready in 380ms
+[?25h
