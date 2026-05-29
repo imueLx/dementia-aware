@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { LogoMark } from "@/components/layout/navbar";
 import type { HomeCopy } from "@/constants/i18n/home";
 
 type FooterProps = {
@@ -19,7 +18,10 @@ export function Footer({ copy }: FooterProps) {
       <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-10 sm:px-6 md:grid-cols-[1.4fr_0.6fr] lg:px-8">
         <div>
           <div className="flex items-center gap-3">
-            <LogoMark />
+            <div
+              className="h-3 w-3 rounded-full bg-purple-700"
+              aria-hidden="true"
+            />
             <div>
               <p className="text-lg font-bold text-slate-950">
                 {copy.brand.name}

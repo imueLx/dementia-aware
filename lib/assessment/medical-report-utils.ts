@@ -170,36 +170,37 @@ export function buildPrintSections(
     locale: string;
   },
 ): PrintReportSection[] {
+  // Use the guideline-mandated field labels for the clinical PDF (medical-professional track).
   return [
     {
       title: options.labels.demographics,
       rows: [
         {
-          label: options.labels.patientId,
+          label: "Patient ID / Case Number",
           value: report.demographics.patientId,
         },
         {
-          label: options.labels.fullName,
+          label: "Full Name",
           value: report.demographics.fullName || options.notProvidedLabel,
         },
-        { label: options.labels.age, value: String(report.demographics.age) },
+        { label: "Age", value: String(report.demographics.age) },
         {
-          label: options.labels.sexAtBirth,
+          label: "Sex assigned at birth",
           value: formatSexAtBirth(
             report.demographics.sexAtBirth,
             options.sexLabels,
           ),
         },
         {
-          label: options.labels.education,
+          label: "Years of Formal Education",
           value: formatEducationYears(
             report.demographics.educationYears,
             options.educationLabels,
           ),
         },
-        { label: options.labels.clinician, value: report.clinicianIdentifier },
+        { label: "Clinician Name / ID", value: report.clinicianIdentifier },
         {
-          label: options.labels.assessmentDate,
+          label: "Assessment Date",
           value: formatAssessmentDateWithLocale(
             report.assessmentDate,
             options.locale,
@@ -211,29 +212,96 @@ export function buildPrintSections(
       title: options.labels.coreScores,
       rows: [
         {
-          label: options.labels.finalAdjustedMoca,
+          label: "Final Adjusted MoCA-P Score",
           value: `${report.moca.adjustedTotal}/30`,
         },
+        { label: "Raw MoCA-P Score", value: `${report.moca.rawTotal}/30` },
         {
-          label: options.labels.rawMoca,
-          value: `${report.moca.rawTotal}/30`,
-        },
-        {
-          label: options.labels.educationAdjustment,
+          label: "Education Adjustment",
           value: `+${report.moca.educationAdjustment}`,
         },
-        { label: options.labels.katzScore, value: `${report.katz.total}/6` },
+        { label: "Katz ADL Score", value: `${report.katz.total}/6` },
+        { label: "Exact Classification", value: report.interpretation.label },
         {
-          label: options.labels.clinicalInterpretation,
+          label: "Overall Clinical Interpretation",
           value: report.interpretation.matrixInterpretation,
-        },
-        {
-          label: "Dashboard category",
-          value: report.interpretation.label,
         },
       ],
     },
   ];
+}
+
+/**
+ * Validate and normalize a MedicalReportPayload to ensure PDF output consistency.
+ * - Recompute domain and katz totals if mismatched
+ * - Clamp adjusted MoCA to 0..30
+ * - Refresh interpretation/recommendation from the canonical matrix
+ */
+export function validateAndNormalizeMedicalReport(
+  report: MedicalReportPayload,
+): MedicalReportPayload {
+  // Clone shallow copy to avoid mutating original
+  const out = JSON.parse(JSON.stringify(report)) as MedicalReportPayload;
+
+  // Recompute raw moca from domain breakdown if present
+  if (out.moca?.domainBreakdown && Array.isArray(out.moca.domainBreakdown)) {
+    const domainSum = out.moca.domainBreakdown.reduce(
+      (s, d) => s + Number(d.score || 0),
+      0,
+    );
+    if (Number(out.moca.rawTotal) !== domainSum) {
+      out.moca.rawTotal = domainSum;
+    }
+  }
+
+  // Ensure education adjustment is numeric
+  out.moca.educationAdjustment = Number(out.moca.educationAdjustment) || 0;
+
+  // Compute adjusted total and clamp
+  out.moca.adjustedTotal = Math.min(
+    30,
+    Math.max(
+      0,
+      Number(out.moca.adjustedTotal) ||
+        Number(out.moca.rawTotal) + out.moca.educationAdjustment,
+    ),
+  );
+
+  // Recompute katz total from responses
+  if (out.katz && out.katz.responses) {
+    const katzSum = Object.values(out.katz.responses).reduce(
+      (s, r) => s + (r === "independent" ? 1 : 0),
+      0,
+    );
+    if (Number(out.katz.total) !== katzSum) {
+      out.katz.total = katzSum;
+    }
+  }
+
+  // Refresh interpretation via canonical matrix lookup to ensure recommendation matches
+  try {
+    const interp = lookupMedicalInterpretationMatrix(
+      out.moca.adjustedTotal,
+      out.katz.total,
+    );
+    out.interpretation = interp;
+    out.recommendation = interp.recommendation;
+    out.referralAction = interp.referralAction;
+  } catch (e) {
+    // If lookup fails, leave as-is but ensure fields exist
+    out.interpretation = out.interpretation || {
+      label: "Normal",
+      matrixInterpretation: "Healthy Aging",
+      recommendation: "Routine Monitoring",
+      referralAction: "",
+    };
+    out.recommendation =
+      out.recommendation || out.interpretation.recommendation;
+    out.referralAction =
+      out.referralAction || out.interpretation.referralAction;
+  }
+
+  return out;
 }
 
 export function createMockMedicalReport(): MedicalAssessmentPayload {

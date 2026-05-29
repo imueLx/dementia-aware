@@ -8,7 +8,7 @@ export const homeCopy = {
       subtitle: "Screening portal",
       shortMission:
         "Helping Filipino families and care teams start dementia awareness and screening conversations earlier.",
-      institution: "Placeholder partner institution",
+      institution: "Clinical and community partner network",
     },
     nav: {
       home: "Home",
@@ -149,9 +149,116 @@ export const homeCopy = {
         },
       ],
     },
+    info: {
+      eyebrow: "Helpful public guidance",
+      title: "Understand the screening flow before you begin",
+      description:
+        "These sections explain who the portal is for, how the screening works, and how privacy is handled for both tracks.",
+      who: {
+        title: "Who is this for",
+        items: [
+          "Families who want a gentle, on-screen screening option before deciding on the next step.",
+          "Clinicians, doctors, nurses, and trained screeners who need structured medical-record workflows.",
+          "Caregivers, barangay health workers, and support teams who want a clear, bilingual guide.",
+        ],
+      },
+      how: {
+        title: "How it works",
+        steps: [
+          {
+            title: "1. Read the guidance",
+            text: "Start with the educational sections so you understand dementia signs, privacy, and the two track options.",
+          },
+          {
+            title: "2. Choose the right track",
+            text: "Pick the medical professional track if the result should be stored in the clinical dashboard, or the family track if you want on-screen-only guidance.",
+          },
+          {
+            title: "3. Review the result",
+            text: "The app shows bilingual interpretation, score breakdowns, and recommended next steps after the assessment is completed.",
+          },
+        ],
+      },
+      whatIs: {
+        title: "What is dementia?",
+        summary:
+          "Dementia is a group of symptoms that affect memory, thinking, communication, and daily function. It is not a single disease.",
+        bullets: [
+          "It can affect memory, attention, orientation, language, and judgment.",
+          "Symptoms may appear gradually and should be discussed early when they start to affect daily life.",
+          "A screening is not a diagnosis, but it can help decide whether medical evaluation is needed.",
+        ],
+      },
+      agingVsDementia: {
+        title: "Normal aging vs possible dementia",
+        normalTitle: "Normal aging",
+        dementiaTitle: "Possible dementia",
+        normalItems: [
+          "Occasional forgetfulness that improves with reminders.",
+          "Minor slowing when learning something new.",
+          "Still able to manage usual daily routines.",
+        ],
+        dementiaItems: [
+          "Repeatedly forgetting important information or recent conversations.",
+          "Getting lost, losing track of time, or having trouble with familiar tasks.",
+          "Changes that begin to interfere with home, work, or self-care.",
+        ],
+      },
+      whyTwoTracks: {
+        title: "Why there are two assessment tracks",
+        summary:
+          "The app supports two different use cases so results stay appropriate, private, and clinically useful.",
+        items: [
+          {
+            title: "Medical professional track",
+            text: "Used when a clinician needs structured demographic data, MoCA-P scoring, Katz ADL scoring, and dashboard storage.",
+          },
+          {
+            title: "Family / caregiver track",
+            text: "Used for private, on-screen screening when families want quick guidance without saving personal data.",
+          },
+        ],
+      },
+      privacy: {
+        title: "Privacy and data handling",
+        items: [
+          "Family and caregiver results stay in the current browser session and are not written to the dashboard database.",
+          "Medical professional submissions are transmitted to the restricted dashboard after final submission.",
+          "The language toggle changes only the interface copy and does not reload the page or clear the current state.",
+        ],
+      },
+      seekHelp: {
+        title: "When to seek professional help",
+        items: [
+          "Symptoms start affecting daily tasks, medications, money handling, or personal safety.",
+          "Family members notice repeated confusion, getting lost, or a sudden change in function or behavior.",
+          "You are unsure whether the changes are from normal aging, illness, or a treatable condition.",
+        ],
+      },
+      faq: {
+        title: "Short FAQ",
+        items: [
+          {
+            question: "Is this a diagnosis?",
+            answer:
+              "No. DementiAware is a screening and education tool that helps you decide whether to seek medical evaluation.",
+          },
+          {
+            question: "Can I use the portal on a phone?",
+            answer:
+              "Yes. The public page is designed to be mobile responsive and readable on smaller screens.",
+          },
+          {
+            question: "Does switching language reset my progress?",
+            answer:
+              "No. The app switches English and Filipino instantly without reloading the page.",
+          },
+        ],
+      },
+    },
     footer: {
       quickLinks: "Quick links",
-      copyright: "© 2026 DementiAware. Educational screening portal prototype.",
+      copyright: "© 2026 DementiAware. Educational dementia screening portal.",
     },
   },
   fil: {
@@ -161,7 +268,7 @@ export const homeCopy = {
       subtitle: "Screening portal",
       shortMission:
         "Tumutulong sa mga pamilyang Pilipino at health teams na mas maagang simulan ang usapan tungkol sa dementia awareness at screening.",
-      institution: "Placeholder partner institution",
+      institution: "Clinical at community partner network",
     },
     nav: {
       home: "Home",
@@ -303,9 +410,116 @@ export const homeCopy = {
         },
       ],
     },
+    info: {
+      eyebrow: "Makatutulong na gabay para sa publiko",
+      title: "Unawain ang screening flow bago magsimula",
+      description:
+        "Ipinaliliwanag ng mga bahaging ito kung para kanino ang portal, paano gumagana ang screening, at paano pinangangalagaan ang privacy sa parehong track.",
+      who: {
+        title: "Para kanino ito",
+        items: [
+          "Mga pamilya na gusto ng banayad at on-screen na screening option bago magpasya sa susunod na hakbang.",
+          "Mga clinician, doktor, nurse, at trained screeners na nangangailangan ng structured medical-record workflow.",
+          "Mga caregiver, barangay health worker, at support teams na gusto ng malinaw at bilingual na gabay.",
+        ],
+      },
+      how: {
+        title: "Paano ito gumagana",
+        steps: [
+          {
+            title: "1. Basahin ang gabay",
+            text: "Magsimula sa educational sections para maunawaan ang dementia signs, privacy, at dalawang track option.",
+          },
+          {
+            title: "2. Piliin ang tamang track",
+            text: "Piliin ang medical professional track kung dapat ma-store sa clinical dashboard ang resulta, o family track kung on-screen only ang guidance.",
+          },
+          {
+            title: "3. Tingnan ang resulta",
+            text: "Ipinapakita ng app ang bilingual interpretation, score breakdowns, at recommended next steps pagkatapos ng assessment.",
+          },
+        ],
+      },
+      whatIs: {
+        title: "Ano ang dementia?",
+        summary:
+          "Ang dementia ay hanay ng sintomas na nakakaapekto sa memorya, pag-iisip, komunikasyon, at pang-araw-araw na paggana. Hindi ito iisang sakit.",
+        bullets: [
+          "Maaaring makaapekto ito sa memorya, atensyon, orientation, wika, at paghatol.",
+          "Madalas itong dahan-dahang lumilitaw at dapat ikonsulta agad kapag nagsimula nang makaapekto sa araw-araw.",
+          "Ang screening ay hindi diagnosis, pero makakatulong itong magpasya kung kailangan ng medikal na pagsusuri.",
+        ],
+      },
+      agingVsDementia: {
+        title: "Normal aging vs posibleng dementia",
+        normalTitle: "Normal na pagtanda",
+        dementiaTitle: "Posibleng dementia",
+        normalItems: [
+          "Paminsang pagkalimot na gumaganda kapag may paalala.",
+          "Bahagyang pagbagal sa pagkatuto ng bago.",
+          "Kaya pa rin ang karaniwang araw-araw na gawain.",
+        ],
+        dementiaItems: [
+          "Paulit-ulit na paglimot sa mahalagang impormasyon o kamakailang usapan.",
+          "Pagkaligaw, pagkawala ng oras, o hirap sa pamilyar na gawain.",
+          "Mga pagbabagong nakakaapekto na sa bahay, trabaho, o pag-aalaga sa sarili.",
+        ],
+      },
+      whyTwoTracks: {
+        title: "Bakit may dalawang assessment track",
+        summary:
+          "Suportado ng app ang dalawang magkaibang use case para ang resulta ay tama, pribado, at klinikal na kapaki-pakinabang.",
+        items: [
+          {
+            title: "Medical professional track",
+            text: "Ginagamit kapag kailangan ng clinician ng structured demographic data, MoCA-P scoring, Katz ADL scoring, at dashboard storage.",
+          },
+          {
+            title: "Family / caregiver track",
+            text: "Ginagamit para sa pribadong on-screen screening kapag gusto ng pamilya ng mabilis na gabay nang hindi sine-save ang personal data.",
+          },
+        ],
+      },
+      privacy: {
+        title: "Privacy at data handling",
+        items: [
+          "Ang family at caregiver results ay nananatili sa kasalukuyang browser session at hindi isinusulat sa dashboard database.",
+          "Ang medical professional submissions ay ipinapadala sa restricted dashboard pagkatapos ng final submission.",
+          "Ang language toggle ay nagbabago lamang ng interface copy at hindi nire-reload ang page o binubura ang current state.",
+        ],
+      },
+      seekHelp: {
+        title: "Kailan dapat magpatingin sa propesyonal",
+        items: [
+          "Kapag ang sintomas ay nakakaapekto na sa araw-araw na gawain, gamot, pera, o kaligtasan.",
+          "Kapag napapansin ng pamilya ang paulit-ulit na pagkalito, pagkaligaw, o biglang pagbabago sa paggana o ugali.",
+          "Kapag hindi tiyak kung ang pagbabago ay normal na pagtanda, karamdaman, o posibleng magagamot na kondisyon.",
+        ],
+      },
+      faq: {
+        title: "Maikling FAQ",
+        items: [
+          {
+            question: "Diagnosis ba ito?",
+            answer:
+              "Hindi. Ang DementiAware ay screening at education tool na tumutulong magpasya kung kailangan ng medikal na pagsusuri.",
+          },
+          {
+            question: "Pwede ba ito sa phone?",
+            answer:
+              "Oo. Ang public page ay ginawa para mobile responsive at madaling basahin sa mas maliit na screen.",
+          },
+          {
+            question: "Nagre-reset ba ang progress kapag pinalitan ang wika?",
+            answer:
+              "Hindi. Nagpapalit ang app ng English at Filipino agad nang hindi nire-reload ang page.",
+          },
+        ],
+      },
+    },
     footer: {
       quickLinks: "Quick links",
-      copyright: "© 2026 DementiAware. Educational screening portal prototype.",
+      copyright: "© 2026 DementiAware. Educational dementia screening portal.",
     },
   },
 } as const satisfies Record<Language, Record<string, unknown>>;

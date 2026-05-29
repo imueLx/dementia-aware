@@ -47,14 +47,20 @@ test("medical matrix row 3: 21-30 cognitive, Katz 2 or below", () => {
 test("medical matrix row 4: 20 or below cognitive, Katz 6", () => {
   const result = lookupMedicalInterpretationMatrix(20, 6);
   assert.equal(resolveMedicalMatrixCognitiveBand(20), "20-or-below");
-  assert.equal(result.matrixInterpretation, "Early Cognitive Decline / Mild MCI");
+  assert.equal(
+    result.matrixInterpretation,
+    "Early Cognitive Decline / Mild MCI",
+  );
   assert.equal(result.label, "MCI");
   assert.match(result.recommendation, /Neurological Diagnostic Panel/i);
 });
 
 test("medical matrix row 5: 20 or below cognitive, Katz 3-5", () => {
   const result = lookupMedicalInterpretationMatrix(15, 4);
-  assert.equal(result.matrixInterpretation, "Cognitive Decline with Functional Deficits");
+  assert.equal(
+    result.matrixInterpretation,
+    "Cognitive Decline with Functional Deficits",
+  );
   assert.equal(result.label, "Moderate Dementia");
   assert.match(result.recommendation, /Geriatric Co-Management/i);
 });
@@ -68,7 +74,10 @@ test("medical matrix row 6: 20 or below cognitive, Katz 2 or below", () => {
 });
 
 test("caregiver matrix row 1: low Mini-Cog, full Lawton (female)", () => {
-  const result = lookupCaregiverInterpretationMatrix(5, { total: 8, maxScore: 8 });
+  const result = lookupCaregiverInterpretationMatrix(5, {
+    total: 8,
+    maxScore: 8,
+  });
   assert.equal(resolveMiniCogRiskBand(5), "low");
   assert.equal(resolveLawtonFunctionalBand({ total: 8, maxScore: 8 }), "full");
   assert.match(result.matrixInterpretation, /Low Risk/i);
@@ -76,42 +85,68 @@ test("caregiver matrix row 1: low Mini-Cog, full Lawton (female)", () => {
 });
 
 test("caregiver matrix row 2: low Mini-Cog, partial Lawton", () => {
-  const result = lookupCaregiverInterpretationMatrix(4, { total: 5, maxScore: 8 });
-  assert.equal(resolveLawtonFunctionalBand({ total: 5, maxScore: 8 }), "partial");
-  assert.match(result.matrixInterpretation, /Isolated Functional Support Need/i);
+  const result = lookupCaregiverInterpretationMatrix(4, {
+    total: 5,
+    maxScore: 8,
+  });
+  assert.equal(
+    resolveLawtonFunctionalBand({ total: 5, maxScore: 8 }),
+    "partial",
+  );
+  assert.match(
+    result.matrixInterpretation,
+    /Isolated Functional Support Need/i,
+  );
   assert.match(result.referralGuidance, /Home Safety/i);
 });
 
 test("caregiver matrix row 3: low Mini-Cog, severe Lawton", () => {
-  const result = lookupCaregiverInterpretationMatrix(3, { total: 2, maxScore: 8 });
-  assert.equal(resolveLawtonFunctionalBand({ total: 2, maxScore: 8 }), "severe");
+  const result = lookupCaregiverInterpretationMatrix(3, {
+    total: 2,
+    maxScore: 8,
+  });
+  assert.equal(
+    resolveLawtonFunctionalBand({ total: 2, maxScore: 8 }),
+    "severe",
+  );
   assert.match(result.matrixInterpretation, /Severe Physical/i);
   assert.match(result.referralGuidance, /Primary Care Review/i);
 });
 
 test("caregiver matrix row 4: high Mini-Cog, full Lawton (male)", () => {
-  const result = lookupCaregiverInterpretationMatrix(2, { total: 5, maxScore: 5 });
+  const result = lookupCaregiverInterpretationMatrix(2, {
+    total: 5,
+    maxScore: 5,
+  });
   assert.equal(resolveMiniCogRiskBand(2), "high");
   assert.match(result.matrixInterpretation, /Early Cognitive Risk/i);
   assert.match(result.referralGuidance, /Specialist Diagnostic Evaluation/i);
 });
 
 test("caregiver matrix row 5: high Mini-Cog, partial Lawton", () => {
-  const result = lookupCaregiverInterpretationMatrix(1, { total: 2, maxScore: 5 });
-  assert.match(result.matrixInterpretation, /Cognitive Decline with Daily Struggles/i);
+  const result = lookupCaregiverInterpretationMatrix(1, {
+    total: 2,
+    maxScore: 5,
+  });
+  assert.match(
+    result.matrixInterpretation,
+    /Cognitive Decline with Daily Struggles/i,
+  );
   assert.match(result.referralGuidance, /Urgent Medical Workup/i);
 });
 
 test("caregiver matrix row 6: high Mini-Cog, severe Lawton", () => {
-  const result = lookupCaregiverInterpretationMatrix(0, { total: 0, maxScore: 5 });
+  const result = lookupCaregiverInterpretationMatrix(0, {
+    total: 0,
+    maxScore: 5,
+  });
   assert.match(result.matrixInterpretation, /Advanced Cognitive/i);
   assert.match(result.referralGuidance, /Comprehensive Geriatric Care/i);
 });
 
 test("Mini-Cog recall counts only active word list", async () => {
-  const { computeMiniCogScore, countActiveMiniCogRecall } = await import(
-    "./family-scoring"
-  );
+  const { computeMiniCogScore, countActiveMiniCogRecall } =
+    await import("./family-scoring");
 
   const score = computeMiniCogScore({
     wordListId: "version-a",
@@ -125,40 +160,53 @@ test("Mini-Cog recall counts only active word list", async () => {
     },
   });
 
-  assert.equal(countActiveMiniCogRecall({
-    wordListId: "version-a",
-    clockDrawingScore: 2,
-    recalledWords: {
-      Banana: true,
-      Sunrise: false,
-      Chair: false,
-      River: true,
-      Market: true,
-    },
-  }), 1);
+  assert.equal(
+    countActiveMiniCogRecall({
+      wordListId: "version-a",
+      clockDrawingScore: 2,
+      recalledWords: {
+        Banana: true,
+        Sunrise: false,
+        Chair: false,
+        River: true,
+        Market: true,
+      },
+    }),
+    1,
+  );
   assert.equal(score, 3);
 });
 
 test("26+ normative hint is display-only and separate from matrix routing", async () => {
-  const { isAdjustedMocaNormativeNormal } = await import("./medical-interpretation-matrix");
+  const { isAdjustedMocaNormativeNormal } =
+    await import("./medical-interpretation-matrix");
   const normalScore = 27;
   const borderlineScore = 23;
-  
+
   assert.equal(isAdjustedMocaNormativeNormal(normalScore), true);
   assert.equal(isAdjustedMocaNormativeNormal(borderlineScore), false);
-  
+
   // Both fall into the same "21-30" cognitive band for matrix routing
   const normalResult = lookupMedicalInterpretationMatrix(normalScore, 6);
-  const borderlineResult = lookupMedicalInterpretationMatrix(borderlineScore, 6);
-  
+  const borderlineResult = lookupMedicalInterpretationMatrix(
+    borderlineScore,
+    6,
+  );
+
   assert.equal(normalResult.matrixInterpretation, "Healthy Aging");
   assert.equal(borderlineResult.matrixInterpretation, "Healthy Aging");
 });
 
 test("Lawton functional band resolves correctly based on gender-specific maxScore", () => {
-  const femaleResult = lookupCaregiverInterpretationMatrix(5, { total: 8, maxScore: 8 });
-  const maleResult = lookupCaregiverInterpretationMatrix(5, { total: 5, maxScore: 5 });
-  
+  const femaleResult = lookupCaregiverInterpretationMatrix(5, {
+    total: 8,
+    maxScore: 8,
+  });
+  const maleResult = lookupCaregiverInterpretationMatrix(5, {
+    total: 5,
+    maxScore: 5,
+  });
+
   assert.equal(femaleResult.matrixInterpretation.includes("Low Risk"), true);
   assert.equal(maleResult.matrixInterpretation.includes("Low Risk"), true);
 });
@@ -186,7 +234,10 @@ test("Exact 6 medical matrix routing cases resolve correctly from lookupMedicalI
 
   // Case 5: Adjusted 10, Katz 4
   const res5 = lookupMedicalInterpretationMatrix(10, 4);
-  assert.equal(res5.matrixInterpretation, "Cognitive Decline with Functional Deficits");
+  assert.equal(
+    res5.matrixInterpretation,
+    "Cognitive Decline with Functional Deficits",
+  );
   assert.equal(res5.label, "Moderate Dementia");
 
   // Case 6: Adjusted 1, Katz 0
@@ -198,7 +249,7 @@ test("Exact 6 medical matrix routing cases resolve correctly from lookupMedicalI
 test("Lawton IADL scoring (English): female max 8 and binary points", async () => {
   const { computeLawtonScore } = await import("./family-scoring");
 
-  const lawton: any = {
+  const lawton = {
     telephone: "independent",
     shopping: "independent",
     foodPreparation: "independent",
@@ -207,7 +258,7 @@ test("Lawton IADL scoring (English): female max 8 and binary points", async () =
     transportation: "independent",
     medications: "independent",
     finances: "independent",
-  };
+  } satisfies import("./family-types").LawtonFormValues;
 
   const res = computeLawtonScore(lawton, "female");
   assert.equal(res.maxScore, 8);
@@ -219,7 +270,7 @@ test("Lawton IADL scoring (English): male max 5 uses only male-scored subset", a
 
   // Male-scored items: telephone, shopping, transportation, medications, finances (5 items).
   // Non-scored items (for scoring) are intentionally dependent.
-  const lawton: any = {
+  const lawton = {
     telephone: "independent",
     shopping: "independent",
     foodPreparation: "dependent",
@@ -228,7 +279,7 @@ test("Lawton IADL scoring (English): male max 5 uses only male-scored subset", a
     transportation: "independent",
     medications: "independent",
     finances: "independent",
-  };
+  } satisfies import("./family-types").LawtonFormValues;
 
   const res = computeLawtonScore(lawton, "male");
   assert.equal(res.maxScore, 5);
@@ -236,9 +287,10 @@ test("Lawton IADL scoring (English): male max 5 uses only male-scored subset", a
 });
 
 test("transformRecordToMedicalPayload recomputes legacy fallback records to correct matrix interpretation and actions", async () => {
-  const { transformRecordToMedicalPayload } = await import("./medical-transformers");
-  
-  const legacyRecord: any = {
+  const { transformRecordToMedicalPayload } =
+    await import("./medical-transformers");
+
+  const legacyRecord = {
     recordId: "med_test_legacy",
     patientId: "CASE-LEGACY",
     caseNumber: "CASE-LEGACY",
@@ -263,11 +315,22 @@ test("transformRecordToMedicalPayload recomputes legacy fallback records to corr
       summary: "Old legacy summary.",
       recommendation: "Old legacy rec.",
     },
-  };
-  
+    createdAt: new Date().toISOString(),
+    source: "medical-professional",
+  } satisfies import("@/lib/data/medical-record-store").MedicalClinicalRecord;
+
   const payload = transformRecordToMedicalPayload(legacyRecord);
-  
-  assert.equal(payload.interpretation.matrixInterpretation, "Cognitive Decline with Functional Deficits");
-  assert.match(payload.interpretation.referralAction, /Geriatric Co-Management/i);
-  assert.match(payload.interpretation.recommendation, /Geriatric Co-Management/i);
+
+  assert.equal(
+    payload.interpretation.matrixInterpretation,
+    "Cognitive Decline with Functional Deficits",
+  );
+  assert.match(
+    payload.interpretation.referralAction,
+    /Geriatric Co-Management/i,
+  );
+  assert.match(
+    payload.interpretation.recommendation,
+    /Geriatric Co-Management/i,
+  );
 });

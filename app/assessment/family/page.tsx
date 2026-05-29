@@ -176,7 +176,7 @@ export default function FamilyAssessmentPage() {
             <div className="grid gap-8">
               <DemographicForm copy={copy.demographics} />
               <MiniCogSection copy={copy.miniCog} />
-              <LawtonSection copy={copy.lawton} />
+              <LawtonSection copy={copy} />
               <SubmitBar
                 copy={copy.submit}
                 hasViewedResults={Boolean(result)}

@@ -1,10 +1,7 @@
 "use client";
 
 import type { MedicalResultsCopy } from "@/constants/i18n/medical-results";
-import type {
-  MedicalReportPayload,
-  MedicalReportSource,
-} from "@/lib/assessment/medical-report-types";
+import type { MedicalReportPayload } from "@/lib/assessment/medical-report-types";
 import { formatAssessmentDateWithLocale } from "@/lib/assessment/medical-report-utils";
 import { ExportActions } from "./export-actions";
 import { LanguageToggle } from "@/components/layout/language-toggle";
@@ -13,16 +10,10 @@ import { useLanguage } from "@/lib/i18n/use-language";
 type ResultsHeaderProps = {
   copy: MedicalResultsCopy;
   report: MedicalReportPayload;
-  source: MedicalReportSource;
   recordId?: string;
 };
 
-export function ResultsHeader({
-  copy,
-  report,
-  source,
-  recordId,
-}: ResultsHeaderProps) {
+export function ResultsHeader({ copy, report, recordId }: ResultsHeaderProps) {
   const { language } = useLanguage();
 
   return (
@@ -78,11 +69,6 @@ export function ResultsHeader({
       <div className="mt-5 rounded-2xl border border-purple-100 bg-purple-50 p-4 text-sm font-semibold leading-6 text-purple-900">
         {copy.page.dashboardNote}
       </div>
-      {source === "mock-fallback" ? (
-        <div className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-900">
-          {copy.page.mockNotice}
-        </div>
-      ) : null}
     </header>
   );
 }

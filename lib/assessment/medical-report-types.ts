@@ -7,8 +7,6 @@ import type {
 
 export type MedicalReportPayload = MedicalAssessmentPayload;
 
-export type MedicalReportSource = "persisted-record" | "mock-fallback";
-
 export type ReportMetric = {
   label: string;
   value: string;

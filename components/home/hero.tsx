@@ -1,7 +1,5 @@
 "use client";
 
-import { LogoMark } from "@/components/layout/navbar";
-import Image from "next/image";
 import type { HomeCopy } from "@/constants/i18n/home";
 
 type HeroProps = {
@@ -19,15 +17,9 @@ export function Hero({ copy, onAssessmentOpen }: HeroProps) {
       <div className="mx-auto grid min-h-[calc(100svh-5rem)] w-full max-w-7xl items-center gap-12 px-4 py-14 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-20">
         <div className="max-w-3xl">
           <div className="mb-6">
-            <div className="inline-flex rounded-2xl bg-slate-950/95 p-3 shadow-lg shadow-slate-900/10">
-              <Image
-                src="/dementia-aware-logo.png"
-                alt="DementiAware"
-                width={520}
-                height={140}
-                priority
-                className="h-14 w-auto max-w-full object-contain drop-shadow-[0_3px_10px_rgba(0,0,0,0.35)] sm:h-16"
-              />
+            <div className="inline-flex items-center gap-3 rounded-full border border-purple-100 bg-white px-4 py-2 text-sm font-bold text-purple-800 shadow-sm">
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+              {copy.brand.name}
             </div>
           </div>
           <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-purple-100 bg-white px-4 py-2 text-sm font-bold text-purple-800 shadow-sm">
@@ -66,16 +58,18 @@ export function Hero({ copy, onAssessmentOpen }: HeroProps) {
         <div className="relative">
           <div className="rounded-[2rem] border border-purple-100 bg-white p-5 shadow-2xl shadow-purple-100 sm:p-7">
             <div className="flex items-center gap-4 border-b border-slate-100 pb-5">
-              <LogoMark size="lg" />
-              <div>
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-700 to-slate-900 text-white shadow-lg shadow-purple-200/70">
+                <span className="h-3.5 w-3.5 rounded-full border-2 border-white/90" />
+              </div>
+              <div className="min-w-0">
                 <p className="text-sm font-bold uppercase tracking-wide text-purple-700">
-                  {copy.brand.name}
+                  {copy.hero.visualTitle}
                 </p>
                 <h2 className="text-2xl font-bold text-slate-950">
-                  {copy.hero.visualTitle}
+                  {copy.hero.visualSubtitle}
                 </h2>
                 <p className="mt-1 text-sm leading-6 text-slate-600">
-                  {copy.hero.visualSubtitle}
+                  {copy.hero.assurance}
                 </p>
               </div>
             </div>

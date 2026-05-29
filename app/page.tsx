@@ -5,6 +5,7 @@ import { AssessmentEntryModal } from "@/components/home/assessment-entry-modal";
 import { AssessmentCta } from "@/components/home/assessment-cta";
 import { Footer } from "@/components/home/footer";
 import { Hero } from "@/components/home/hero";
+import { InformationSections } from "@/components/home/information-sections";
 import { TriviaHub } from "@/components/home/trivia-hub";
 import { Navbar } from "@/components/layout/navbar";
 import { useCopy } from "@/lib/i18n/use-copy";
@@ -22,6 +23,7 @@ export default function HomePage() {
       <main>
         <Hero copy={copy} onAssessmentOpen={() => setIsAssessmentOpen(true)} />
         <TriviaHub copy={copy} />
+        <InformationSections copy={copy} />
         <AssessmentCta copy={copy} onOpen={() => setIsAssessmentOpen(true)} />
       </main>
       <Footer copy={copy} />

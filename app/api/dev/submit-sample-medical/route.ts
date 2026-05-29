@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { submitMedicalAssessment } from "@/lib/assessment/medical-submit";
+import type { MedicalAssessmentFormValues } from "@/lib/assessment/medical-types";
 
-export async function POST(_: Request) {
+export async function POST() {
   if (String(process.env.ENABLE_DEV_ROUTES ?? "false") !== "true") {
     return new Response(null, { status: 404 });
   }
@@ -11,7 +12,7 @@ export async function POST(_: Request) {
   }
   const assessmentDate = new Date().toISOString();
 
-  const values = {
+  const values: MedicalAssessmentFormValues = {
     demographics: {
       patientId: "dev-sample-001",
       fullName: "Dev Sample",
@@ -48,14 +49,14 @@ export async function POST(_: Request) {
       continence: "independent",
       feeding: "independent",
     },
-  } as any;
+  };
 
   try {
     const result = await submitMedicalAssessment(values, assessmentDate);
     return NextResponse.json(result);
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json(
-      { ok: false, message: String(err?.message ?? err) },
+      { ok: false, message: err instanceof Error ? err.message : String(err) },
       { status: 500 },
     );
   }

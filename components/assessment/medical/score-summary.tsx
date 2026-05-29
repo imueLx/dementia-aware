@@ -55,7 +55,9 @@ export function ScoreSummary({
     },
   ).format(new Date(assessmentDate));
 
-  const normativeNormal = isAdjustedMocaNormativeNormal(totals.adjustedMocaTotal);
+  const normativeNormal = isAdjustedMocaNormativeNormal(
+    totals.adjustedMocaTotal,
+  );
 
   return (
     <aside className="lg:sticky lg:top-24" aria-labelledby="summary-heading">
@@ -122,7 +124,11 @@ export function ScoreSummary({
             {totals.interpretation.matrixInterpretation}
           </p>
           <p className="mt-2 text-sm text-purple-100">
-            Dashboard category: {totals.interpretation.label}
+            Exact Classification: {totals.interpretation.label}
+          </p>
+          <p className="mt-2 text-sm text-purple-100">
+            Overall Clinical Interpretation:{" "}
+            {totals.interpretation.matrixInterpretation}
           </p>
           <p className="mt-3 text-sm font-semibold text-purple-100">
             {copy.recommendation}

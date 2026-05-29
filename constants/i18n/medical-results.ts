@@ -9,16 +9,15 @@ export const medicalResultsCopy = {
         "Doctor-facing clinical summary for the Medical Professional / Trained Specialist workflow.",
       dashboardNote:
         "This medical-track result is structured for secure transmission to the restricted Clinical Central Dashboard.",
-      mockNotice:
-        "Showing mock report data because no submitted medical payload was found in this browser session.",
     },
     actions: {
       print: "Print Report",
       downloadPdf: "Download PDF",
-      downloadPdfHint: "PDF export placeholder. Uses print for now.",
+      downloadPdfHint:
+        "Opens the print-friendly clinical report for PDF download.",
       backAssessment: "Back to Assessment",
       dashboard: "Back to Dashboard",
-      dashboardHint: "Dashboard placeholder",
+      dashboardHint: "Restricted dashboard for clinician review.",
     },
     header: {
       assessmentDate: "Assessment date",
@@ -135,16 +134,15 @@ export const medicalResultsCopy = {
         "Doctor-facing clinical summary para sa Medical Professional / Trained Specialist workflow.",
       dashboardNote:
         "Ang medical-track result na ito ay naka-structure para sa secure transmission papunta sa restricted Clinical Central Dashboard.",
-      mockNotice:
-        "Mock report data ang ipinapakita dahil walang submitted medical payload sa browser session na ito.",
     },
     actions: {
       print: "I-print ang Report",
       downloadPdf: "Download PDF",
-      downloadPdfHint: "PDF export placeholder. Print muna ang gamit ngayon.",
+      downloadPdfHint:
+        "Binubuksan ang print-friendly clinical report para sa PDF download.",
       backAssessment: "Bumalik sa Assessment",
       dashboard: "Bumalik sa Dashboard",
-      dashboardHint: "Dashboard placeholder",
+      dashboardHint: "Restricted dashboard para sa clinician review.",
     },
     header: {
       assessmentDate: "Assessment date",

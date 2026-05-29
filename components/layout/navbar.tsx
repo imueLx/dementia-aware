@@ -1,13 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LogoMark } from "@/components/layout/logo-mark";
 import { useCopy } from "@/lib/i18n/use-copy";
 import { useLanguage } from "@/lib/i18n/use-language";
 import type { Language } from "@/lib/i18n/language-types";
-
-export { LogoMark } from "@/components/layout/logo-mark";
 
 type NavbarProps = {
   onAssessmentOpen: () => void;
@@ -52,12 +50,29 @@ export function Navbar({ onAssessmentOpen }: NavbarProps) {
           className="flex items-center gap-3 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-4"
           onClick={closeMenu}
         >
-          <LogoMark />
-          <span className="flex flex-col leading-tight">
-            <span className="text-lg font-bold text-slate-950">
-              {copy.brand.name}
+          <span className="flex items-center">
+            <Image
+              src="/dementia-aware-small-logo.png"
+              alt={copy.brand.logoAlt}
+              width={44}
+              height={44}
+              priority
+              className="h-11 w-11 object-contain sm:hidden"
+            />
+            <Image
+              src="/dementia-aware-wide-logo.png"
+              alt={copy.brand.logoAlt}
+              width={186}
+              height={52}
+              priority
+              className="hidden h-11 w-auto max-w-48 object-contain sm:block"
+            />
+          </span>
+          <span className="flex flex-col leading-tight sm:hidden">
+            <span className="text-lg font-bold tracking-tight text-slate-950">
+              DementiAware
             </span>
-            <span className="text-xs font-medium text-purple-700">
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-purple-700">
               {copy.brand.subtitle}
             </span>
           </span>

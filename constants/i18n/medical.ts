@@ -135,11 +135,11 @@ export const medicalCopy = {
     submit: {
       title: "Submit to Clinical Dashboard Queue",
       description:
-        "For now this builds and logs a mock payload. Later, this same payload can be securely transmitted to the restricted Clinical Central Dashboard.",
+        "Final validation runs before secure transmission to the restricted Clinical Central Dashboard.",
       button: "Submit Assessment",
-      submitted: "Mock payload prepared for secure dashboard transmission.",
+      submitted: "Assessment submitted to the restricted clinical dashboard.",
       payloadHint:
-        "Payload logged in the browser console for development review.",
+        "Record includes demographics, MoCA-P domains, Katz ADL, interpretation, and referral notes.",
     },
   },
   fil: {
@@ -276,11 +276,11 @@ export const medicalCopy = {
     submit: {
       title: "Submit to Clinical Dashboard Queue",
       description:
-        "Sa ngayon, gumagawa at naglo-log ito ng mock payload. Sa susunod, ang payload na ito ay puwedeng secure na ipadala sa restricted Clinical Central Dashboard.",
+        "Magsasagawa ng final validation bago secure na maipadala sa restricted Clinical Central Dashboard.",
       button: "Ipasa ang Assessment",
-      submitted: "Mock payload prepared para sa secure dashboard transmission.",
+      submitted: "Naipasa na ang assessment sa restricted clinical dashboard.",
       payloadHint:
-        "Payload logged sa browser console para sa development review.",
+        "Kasama sa record ang demographics, MoCA-P domains, Katz ADL, interpretation, at referral notes.",
     },
   },
 } as const satisfies Record<Language, Record<string, unknown>>;

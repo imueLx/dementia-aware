@@ -28,7 +28,7 @@ export async function createMedicalRecord(record: MedicalClinicalRecord) {
 }
 
 export async function listMedicalRecords() {
-  if (!canReadClinicalDashboard()) {
+  if (!(await canReadClinicalDashboard())) {
     return [];
   }
 

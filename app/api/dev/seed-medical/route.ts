@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import { createMedicalRecord } from "@/lib/data/medical-record-repository";
+import type { MedicalClinicalRecord } from "@/lib/data/medical-record-store";
 
-export async function POST(_: Request) {
+export async function POST() {
   // Protect dev endpoints behind an explicit env flag
   if (String(process.env.ENABLE_DEV_ROUTES ?? "false") !== "true") {
     return new Response(null, { status: 404 });
@@ -13,7 +14,7 @@ export async function POST(_: Request) {
   }
   const now = new Date().toISOString();
 
-  const record = {
+  const record: MedicalClinicalRecord = {
     recordId: `dev-${uuidv4()}`,
     patientId: `DEV-${Math.floor(Math.random() * 100000)}`,
     caseNumber: `CASE-${Math.floor(Math.random() * 100000)}`,
@@ -34,20 +35,20 @@ export async function POST(_: Request) {
       itemBreakdown: [],
     },
     interpretation: {
-      diagnosticCategory: "normal",
+      diagnosticCategory: "Normal",
       summary: "Dev-created sample record",
       recommendation: "None",
     },
     createdAt: now,
     source: "medical-professional",
-  } as any;
+  };
 
   try {
     const created = await createMedicalRecord(record);
     return NextResponse.json({ ok: true, recordId: created.recordId });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json(
-      { ok: false, message: String(err?.message ?? err) },
+      { ok: false, message: err instanceof Error ? err.message : String(err) },
       { status: 500 },
     );
   }

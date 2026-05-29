@@ -12,7 +12,7 @@ import type {
   MedicalReportPayload,
   PrintReportSection,
 } from "./medical-report-types";
-import { formatAssessmentDateWithLocale } from "./medical-report-utils";
+import { validateAndNormalizeMedicalReport } from "./medical-report-utils";
 
 const PAGE_SIZE: [number, number] = [595.28, 841.89];
 const PAGE_W = PAGE_SIZE[0];
@@ -158,27 +158,15 @@ class MedicalPdfWriter {
     if (this.logo) {
       const maxLogoH = 50;
       const maxLogoW = 200;
-      const scale = Math.min(maxLogoW / this.logo.width, maxLogoH / this.logo.height);
+      const scale = Math.min(
+        maxLogoW / this.logo.width,
+        maxLogoH / this.logo.height,
+      );
       const logoW = this.logo.width * scale;
       const logoH = this.logo.height * scale;
 
-      const badgeSize = 44;
-      const badgeX = MARGIN + CONTENT_W - badgeSize;
-      const badgeScale = Math.min(
-        badgeSize / this.logo.width,
-        badgeSize / this.logo.height,
-      );
-      const badgeW = this.logo.width * badgeScale;
-      const badgeH = this.logo.height * badgeScale;
-      this.page.drawImage(this.logo, {
-        x: badgeX + (badgeSize - badgeW) / 2,
-        y: headerTop - badgeH,
-        width: badgeW,
-        height: badgeH,
-      });
-
       const titleX = MARGIN + logoW + 14;
-      const titleBlockW = Math.max(badgeX - titleX - 8, 160);
+      const titleBlockW = Math.max(CONTENT_W - (titleX - MARGIN), 160);
 
       this.page.drawImage(this.logo, {
         x: MARGIN,
@@ -197,14 +185,35 @@ class MedicalPdfWriter {
       const subLines = wrapText(subtitle, this.fonts.regular, 9, titleBlockW);
       let subY = titleY - 4;
       for (const line of subLines) {
-        this.drawText(line, titleX, subY, 9, this.fonts.regular, COLORS.textMuted);
+        this.drawText(
+          line,
+          titleX,
+          subY,
+          9,
+          this.fonts.regular,
+          COLORS.textMuted,
+        );
         subY -= 11;
       }
 
       headerBottom = Math.min(headerTop - logoH, subY - 6);
     } else {
-      this.drawText(title, MARGIN, headerTop - 18, 16, this.fonts.bold, COLORS.text);
-      this.drawText(subtitle, MARGIN, headerTop - 34, 9, this.fonts.regular, COLORS.textMuted);
+      this.drawText(
+        title,
+        MARGIN,
+        headerTop - 18,
+        16,
+        this.fonts.bold,
+        COLORS.text,
+      );
+      this.drawText(
+        subtitle,
+        MARGIN,
+        headerTop - 34,
+        9,
+        this.fonts.regular,
+        COLORS.textMuted,
+      );
       headerBottom = headerTop - headerRowH;
     }
 
@@ -219,13 +228,25 @@ class MedicalPdfWriter {
 
     // Prepared-for note box
     const noteTop = borderY - 12;
-    const noteLines = wrapText(preparedFor, this.fonts.regular, 9, CONTENT_W - 24);
+    const noteLines = wrapText(
+      preparedFor,
+      this.fonts.regular,
+      9,
+      CONTENT_W - 24,
+    );
     const noteH = 14 + noteLines.length * 12 + 10;
     this.drawRect(MARGIN, noteTop - noteH, CONTENT_W, noteH, {
       fill: COLORS.purpleLight,
       border: COLORS.purpleLine,
     });
-    this.drawText(preparedFor, MARGIN + 12, noteTop - 20, 9, this.fonts.bold, COLORS.purpleDark);
+    this.drawText(
+      preparedFor,
+      MARGIN + 12,
+      noteTop - 20,
+      9,
+      this.fonts.bold,
+      COLORS.purpleDark,
+    );
 
     this.y = noteTop - noteH - 18;
   }
@@ -233,7 +254,14 @@ class MedicalPdfWriter {
   private drawSectionCards(section: PrintReportSection): void {
     // Title
     this.ensureSpace(26);
-    this.drawText(section.title, MARGIN, this.y - 14, 13, this.fonts.bold, COLORS.text);
+    this.drawText(
+      section.title,
+      MARGIN,
+      this.y - 14,
+      13,
+      this.fonts.bold,
+      COLORS.text,
+    );
     this.advance(22);
 
     // 2-column card grid
@@ -242,8 +270,6 @@ class MedicalPdfWriter {
     const cardPadX = 10;
     const headerSize = 7.5;
     const valueSize = 10;
-    const headerH = 12;
-    const valueH = 14;
     const cardH = 44;
 
     for (let i = 0; i < section.rows.length; i += 2) {
@@ -255,10 +281,29 @@ class MedicalPdfWriter {
           fill: COLORS.white,
           border: COLORS.border,
         });
-        this.drawText(label.toUpperCase(), x + cardPadX, rowTop - 16, headerSize, this.fonts.bold, COLORS.textMuted);
+        this.drawText(
+          label.toUpperCase(),
+          x + cardPadX,
+          rowTop - 16,
+          headerSize,
+          this.fonts.bold,
+          COLORS.textMuted,
+        );
 
-        const lines = wrapText(value, this.fonts.bold, valueSize, cardW - cardPadX * 2);
-        this.drawText(lines[0] ?? "", x + cardPadX, rowTop - 32, valueSize, this.fonts.bold, COLORS.text);
+        const lines = wrapText(
+          value,
+          this.fonts.bold,
+          valueSize,
+          cardW - cardPadX * 2,
+        );
+        this.drawText(
+          lines[0] ?? "",
+          x + cardPadX,
+          rowTop - 32,
+          valueSize,
+          this.fonts.bold,
+          COLORS.text,
+        );
       };
 
       const left = section.rows[i];
@@ -276,30 +321,37 @@ class MedicalPdfWriter {
   private drawInterpretationBox(
     title: string,
     matrixInterpretation: string,
-    dashboardCategory: string,
+    exactClassification: string,
     rationale: string,
     recommendation: string,
   ): void {
     this.ensureSpace(120);
-    this.drawRect(MARGIN, this.y - 0, CONTENT_W, 0, { }); // no-op for spacing consistency
+    this.drawRect(MARGIN, this.y - 0, CONTENT_W, 0, {}); // no-op for spacing consistency
 
     // Outer box
-    const boxPad = 12;
     const startY = this.y;
     // We'll compute height based on wrapped text, with pagination support by splitting blocks.
     // Keep it simple: draw as three stacked wrapped blocks with borders, similar to existing notes.
 
-    this.drawRect(MARGIN, startY - 0, 0, 0, { }); // no-op
+    this.drawRect(MARGIN, startY - 0, 0, 0, {}); // no-op
 
     // Title
-    this.drawRect(MARGIN, startY - 0, 0, 0, { }); // no-op
+    this.drawRect(MARGIN, startY - 0, 0, 0, {}); // no-op
     this.drawText(title, MARGIN, startY - 14, 13, this.fonts.bold, COLORS.text);
     this.y = startY - 24;
 
     // Interpretation headline
-    this.drawText(matrixInterpretation, MARGIN, this.y - 18, 14, this.fonts.bold, COLORS.purpleDark);
+    // Show both Exact Classification and Overall Clinical Interpretation explicitly
     this.drawText(
-      `Dashboard category: ${dashboardCategory}`,
+      `Exact Classification: ${exactClassification}`,
+      MARGIN,
+      this.y - 18,
+      11,
+      this.fonts.bold,
+      COLORS.purpleDark,
+    );
+    this.drawText(
+      `Overall Clinical Interpretation: ${matrixInterpretation}`,
       MARGIN,
       this.y - 34,
       9,
@@ -372,7 +424,13 @@ class MedicalPdfWriter {
     options: { fill?: RGB; border?: RGB; borderWidth?: number },
   ): void {
     if (options.fill) {
-      this.page.drawRectangle({ x, y, width: w, height: h, color: options.fill });
+      this.page.drawRectangle({
+        x,
+        y,
+        width: w,
+        height: h,
+        color: options.fill,
+      });
     }
     if (options.border) {
       this.page.drawRectangle({
@@ -386,7 +444,13 @@ class MedicalPdfWriter {
     }
   }
 
-  private drawLine(x1: number, y1: number, x2: number, y2: number, color = COLORS.border): void {
+  private drawLine(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    color = COLORS.border,
+  ): void {
     this.page.drawLine({
       start: { x: x1, y: y1 },
       end: { x: x2, y: y2 },
@@ -422,7 +486,14 @@ class MedicalPdfWriter {
 
   private drawSectionHeading(title: string): void {
     this.ensureSpace(28);
-    this.drawText(title.toUpperCase(), MARGIN, this.y - 11, 9, this.fonts.bold, COLORS.purple);
+    this.drawText(
+      title.toUpperCase(),
+      MARGIN,
+      this.y - 11,
+      9,
+      this.fonts.bold,
+      COLORS.purple,
+    );
     this.advance(14);
     this.drawLine(MARGIN, this.y, PAGE_W - MARGIN, this.y, COLORS.purpleLine);
     this.advance(12);
@@ -451,15 +522,25 @@ class MedicalPdfWriter {
         thickness: 0.5,
         color: COLORS.border,
       });
-      page.drawText(sanitizePdfText("DementiAware  |  Confidential clinical report"), {
-        x: MARGIN,
-        y: footerY,
-        size: 7.5,
-        font: this.fonts.regular,
-        color: COLORS.textLight,
-      });
+      page.drawText(
+        sanitizePdfText("DementiAware  |  Confidential clinical report"),
+        {
+          x: MARGIN,
+          y: footerY,
+          size: 7.5,
+          font: this.fonts.regular,
+          color: COLORS.textLight,
+        },
+      );
       page.drawText(sanitizePdfText(`Page ${index + 1} of ${total}`), {
-        x: PAGE_W - MARGIN - this.measureText(`Page ${index + 1} of ${total}`, 7.5, this.fonts.regular),
+        x:
+          PAGE_W -
+          MARGIN -
+          this.measureText(
+            `Page ${index + 1} of ${total}`,
+            7.5,
+            this.fonts.regular,
+          ),
         y: footerY,
         size: 7.5,
         font: this.fonts.regular,
@@ -506,7 +587,14 @@ class MedicalPdfWriter {
       const row = Math.floor(index / columns);
       const x = MARGIN + 12 + col * colW;
       const baseline = boxY + boxH - 14 - row * rowH;
-      this.drawText(pair.label, x, baseline + 11, 7.5, this.fonts.regular, COLORS.textMuted);
+      this.drawText(
+        pair.label,
+        x,
+        baseline + 11,
+        7.5,
+        this.fonts.regular,
+        COLORS.textMuted,
+      );
       this.drawText(pair.value, x, baseline, 10, this.fonts.bold, COLORS.text);
     });
 
@@ -515,6 +603,7 @@ class MedicalPdfWriter {
 
   private drawScoreSummary(input: MedicalPdfDocumentInput): void {
     const { report, recommendation } = input;
+    // report should already be validated; but tolerate if not.
     const referral =
       report.referralAction ||
       report.interpretation.referralAction ||
@@ -541,9 +630,30 @@ class MedicalPdfWriter {
         fill: accent ? COLORS.purpleLight : COLORS.white,
         border: accent ? COLORS.purpleLine : COLORS.border,
       });
-      this.drawText(label, x + 12, y - 18, 8, this.fonts.bold, COLORS.textMuted);
-      this.drawText(value, x + 12, y - 46, 22, this.fonts.bold, accent ? COLORS.purple : COLORS.text);
-      this.drawText(sub, x + 12, y - 62, 8, this.fonts.regular, COLORS.textMuted);
+      this.drawText(
+        label,
+        x + 12,
+        y - 18,
+        8,
+        this.fonts.bold,
+        COLORS.textMuted,
+      );
+      this.drawText(
+        value,
+        x + 12,
+        y - 46,
+        22,
+        this.fonts.bold,
+        accent ? COLORS.purple : COLORS.text,
+      );
+      this.drawText(
+        sub,
+        x + 12,
+        y - 62,
+        8,
+        this.fonts.regular,
+        COLORS.textMuted,
+      );
     };
 
     const row1Bottom = topY;
@@ -580,9 +690,22 @@ class MedicalPdfWriter {
     });
 
     const half = CONTENT_W / 2;
-    this.drawLine(MARGIN + half, row2Bottom - tallCardH, MARGIN + half, row2Bottom, COLORS.border);
+    this.drawLine(
+      MARGIN + half,
+      row2Bottom - tallCardH,
+      MARGIN + half,
+      row2Bottom,
+      COLORS.border,
+    );
 
-    this.drawText("Clinical interpretation", MARGIN + 12, row2Bottom - 18, 8, this.fonts.bold, COLORS.textMuted);
+    this.drawText(
+      "Clinical interpretation",
+      MARGIN + 12,
+      row2Bottom - 18,
+      8,
+      this.fonts.bold,
+      COLORS.textMuted,
+    );
     this.drawText(
       report.interpretation.matrixInterpretation,
       MARGIN + 12,
@@ -590,6 +713,16 @@ class MedicalPdfWriter {
       11,
       this.fonts.bold,
       COLORS.purpleDark,
+    );
+
+    // Explicit exact classification label (do not substitute with dashboard category)
+    this.drawText(
+      `Exact Classification: ${report.interpretation.label}`,
+      MARGIN + 12,
+      row2Bottom - 54,
+      9,
+      this.fonts.regular,
+      COLORS.textMuted,
     );
 
     this.drawText(
@@ -606,7 +739,14 @@ class MedicalPdfWriter {
     const maxLines = Math.max(1, Math.floor((startY - minY) / 11) + 1);
 
     referralLines.slice(0, maxLines).forEach((line, i) => {
-      this.drawText(line, MARGIN + half + 12, row2Bottom - 34 - i * 11, 9, this.fonts.regular, COLORS.text);
+      this.drawText(
+        line,
+        MARGIN + half + 12,
+        row2Bottom - 34 - i * 11,
+        9,
+        this.fonts.regular,
+        COLORS.text,
+      );
     });
 
     this.y = row2Bottom - tallCardH - 20;
@@ -627,7 +767,14 @@ class MedicalPdfWriter {
 
     let colX = tableX;
     columns.forEach((col) => {
-      this.drawText(col.header, colX + 8, tableTop - 16, 8, this.fonts.bold, COLORS.purpleDark);
+      this.drawText(
+        col.header,
+        colX + 8,
+        tableTop - 16,
+        8,
+        this.fonts.bold,
+        COLORS.purpleDark,
+      );
       colX += col.width;
     });
   }
@@ -654,9 +801,15 @@ class MedicalPdfWriter {
       const text = sanitizePdfText(cell);
       let textX = colX + 8;
       if (col.align === "center") {
-        textX = colX + (col.width - this.measureText(text, size, this.fonts.regular)) / 2;
+        textX =
+          colX +
+          (col.width - this.measureText(text, size, this.fonts.regular)) / 2;
       } else if (col.align === "right") {
-        textX = colX + col.width - 8 - this.measureText(text, size, this.fonts.regular);
+        textX =
+          colX +
+          col.width -
+          8 -
+          this.measureText(text, size, this.fonts.regular);
       }
       const font = this.fonts.regular;
       this.drawText(text, textX, rowTop - 14, size, font, COLORS.text);
@@ -680,7 +833,14 @@ class MedicalPdfWriter {
     const startTableSection = () => {
       this.ensureSpace(headerH + rowHeight + 8);
       tableTop = this.y;
-      this.drawTableHeader(columns, tableX, tableW, tableTop, headerH, options?.headerFill);
+      this.drawTableHeader(
+        columns,
+        tableX,
+        tableW,
+        tableTop,
+        headerH,
+        options?.headerFill,
+      );
       tableTop -= headerH;
     };
 
@@ -692,7 +852,15 @@ class MedicalPdfWriter {
         startTableSection();
       }
 
-      this.drawTableRow(columns, row, tableX, tableW, tableTop, rowHeight, rowCounter);
+      this.drawTableRow(
+        columns,
+        row,
+        tableX,
+        tableW,
+        tableTop,
+        rowHeight,
+        rowCounter,
+      );
       tableTop -= rowHeight;
       rowCounter += 1;
     });
@@ -712,19 +880,37 @@ class MedicalPdfWriter {
     const boxPad = 14;
     const innerW = CONTENT_W - boxPad * 2;
 
-    this.drawText("Classification", MARGIN, this.y - 10, 8, this.fonts.bold, COLORS.textMuted);
+    this.drawText(
+      "Classification",
+      MARGIN,
+      this.y - 10,
+      8,
+      this.fonts.bold,
+      COLORS.textMuted,
+    );
     this.advance(14);
     this.drawRect(MARGIN, this.y - 26, CONTENT_W, 26, {
       fill: COLORS.purpleLight,
       border: COLORS.purpleLine,
     });
-    this.drawText(interpretation, MARGIN + 12, this.y - 18, 12, this.fonts.bold, COLORS.purpleDark);
-    this.advance(36);
-
-    if (dashboardCategory) {
-      this.drawText(`Dashboard Category: ${dashboardCategory}`, MARGIN, this.y - 10, 8.5, this.fonts.bold, COLORS.textMuted);
-      this.advance(16);
-    }
+    // Show both fields explicitly per guideline
+    this.drawText(
+      `Exact Classification: ${dashboardCategory ?? "Not provided"}`,
+      MARGIN + 12,
+      this.y - 18,
+      11,
+      this.fonts.bold,
+      COLORS.purpleDark,
+    );
+    this.drawText(
+      `Overall Clinical Interpretation: ${interpretation}`,
+      MARGIN + 12,
+      this.y - 34,
+      9,
+      this.fonts.regular,
+      COLORS.textMuted,
+    );
+    this.advance(46);
 
     const blocks: Array<{ title: string; body: string }> = [
       { title: "Clinical rationale", body: rationale },
@@ -742,11 +928,25 @@ class MedicalPdfWriter {
         fill: COLORS.white,
         border: COLORS.border,
       });
-      this.drawText(block.title, MARGIN + boxPad, this.y - 16, 8, this.fonts.bold, COLORS.textMuted);
+      this.drawText(
+        block.title,
+        MARGIN + boxPad,
+        this.y - 16,
+        8,
+        this.fonts.bold,
+        COLORS.textMuted,
+      );
 
       let lineY = this.y - 30;
       for (const line of lines) {
-        this.drawText(line, MARGIN + boxPad, lineY, 9.5, this.fonts.regular, COLORS.text);
+        this.drawText(
+          line,
+          MARGIN + boxPad,
+          lineY,
+          9.5,
+          this.fonts.regular,
+          COLORS.text,
+        );
         lineY -= 12;
       }
 
@@ -755,7 +955,8 @@ class MedicalPdfWriter {
   }
 
   render(input: MedicalPdfDocumentInput): void {
-    const { sections, domains, katzRows, report, rationale, recommendation } = input;
+    const { sections, domains, katzRows, report, rationale, recommendation } =
+      input;
     this.drawPrintLikeHeader();
 
     // Mirror Print: render all `sections` as card grids (demographics + core scores).
@@ -783,7 +984,11 @@ class MedicalPdfWriter {
     this.drawTable(
       [
         { header: "Activity", width: CONTENT_W * 0.42 },
-        { header: "Functional status", width: CONTENT_W * 0.34, align: "center" },
+        {
+          header: "Functional status",
+          width: CONTENT_W * 0.34,
+          align: "center",
+        },
         { header: "Points", width: CONTENT_W * 0.24, align: "right" },
       ],
       [
@@ -827,6 +1032,15 @@ export async function buildMedicalAssessmentPdf(
     ? await pdfDoc.embedPng(input.logoPngBytes)
     : undefined;
 
+  // Validate and normalize report payload to ensure consistency for PDF output.
+  try {
+    input.report = validateAndNormalizeMedicalReport(
+      input.report as any,
+    ) as any;
+  } catch (e) {
+    // proceed with original input if validation fails
+  }
+
   const writer = new MedicalPdfWriter(
     pdfDoc,
     { regular, bold },
@@ -838,6 +1052,7 @@ export async function buildMedicalAssessmentPdf(
     },
     logo,
   );
+
   writer.render(input);
   return writer.save();
 }

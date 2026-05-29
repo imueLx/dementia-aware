@@ -26,6 +26,9 @@ export function PatientDetailDrawer({
   const medicalCopy = useCopy("medical");
   const { language } = useLanguage();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const downloadHref = record
+    ? `/api/medical/report/${record.assessmentId}`
+    : "#";
 
   useEffect(() => {
     if (!record) {
@@ -116,7 +119,7 @@ export function PatientDetailDrawer({
             </div>
             <div className="flex items-center gap-3">
               <a
-                href={`/api/medical/report/${record.assessmentId}?ts=${Date.now()}`}
+                href={downloadHref}
                 className="inline-flex items-center justify-center rounded-full border border-purple-200 bg-white px-3 py-2 text-sm font-bold text-purple-800 transition hover:bg-purple-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
               >
                 {dashboardCopy.actions?.downloadPdf ?? "Download PDF"}

@@ -2,10 +2,7 @@
 
 import Link from "next/link";
 import { useCopy } from "@/lib/i18n/use-copy";
-import type {
-  MedicalReportPayload,
-  MedicalReportSource,
-} from "@/lib/assessment/medical-report-types";
+import type { MedicalReportPayload } from "@/lib/assessment/medical-report-types";
 import { DomainBreakdown } from "@/components/assessment/medical/domain-breakdown";
 import { InterpretationPanel } from "@/components/assessment/medical/interpretation-panel";
 import { PrintReport } from "@/components/assessment/medical/print-report";
@@ -14,15 +11,10 @@ import { ResultsOverview } from "@/components/assessment/medical/results-overvie
 
 type ResultsViewProps = {
   report: MedicalReportPayload | null;
-  source: MedicalReportSource;
   recordId?: string;
 };
 
-export function MedicalResultsView({
-  report,
-  source,
-  recordId,
-}: ResultsViewProps) {
+export function MedicalResultsView({ report, recordId }: ResultsViewProps) {
   const copy = useCopy("medicalResults");
 
   if (!report) {
@@ -60,12 +52,7 @@ export function MedicalResultsView({
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
       <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <ResultsHeader
-          copy={copy}
-          report={report}
-          source={source}
-          recordId={recordId}
-        />
+        <ResultsHeader copy={copy} report={report} recordId={recordId} />
 
         <div className="mt-8 grid gap-8">
           <ResultsOverview copy={copy.overview} report={report} />

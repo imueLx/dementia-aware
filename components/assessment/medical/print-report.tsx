@@ -66,6 +66,7 @@ export function PrintReport({ copy, report }: PrintReportProps) {
               src="/dementia-aware-logo.png"
               alt="DementiAware"
               fill
+              sizes="208px"
               className="object-contain object-left"
               priority
             />
@@ -176,7 +177,11 @@ export function PrintReport({ copy, report }: PrintReportProps) {
             {report.interpretation.matrixInterpretation}
           </p>
           <p className="mt-1 text-sm text-slate-600">
-            Dashboard category: {report.interpretation.label}
+            Exact Classification: {report.interpretation.label}
+          </p>
+          <p className="mt-1 text-sm text-slate-600">
+            Overall Clinical Interpretation:{" "}
+            {report.interpretation.matrixInterpretation}
           </p>
           <p className="mt-3 text-sm leading-6">{rationale}</p>
           <p className="mt-3 text-sm leading-6">{recommendation}</p>

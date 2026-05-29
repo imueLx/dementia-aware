@@ -12,9 +12,9 @@ export async function GET() {
   try {
     const records = await listMedicalRecords();
     return NextResponse.json({ ok: true, count: records.length, records });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json(
-      { ok: false, message: String(err?.message ?? err) },
+      { ok: false, message: err instanceof Error ? err.message : String(err) },
       { status: 500 },
     );
   }
