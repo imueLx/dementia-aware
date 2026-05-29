@@ -25,13 +25,6 @@ export function PatientRowActions({
       >
         {copy.viewDetails}
       </button>
-      <button
-        type="button"
-        onClick={() => onDownloadPdf(record)}
-        className="inline-flex min-h-10 items-center justify-center rounded-full bg-purple-700 px-4 text-xs font-bold text-white transition hover:bg-purple-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
-      >
-        {copy.downloadPdf}
-      </button>
     </div>
   );
 }
