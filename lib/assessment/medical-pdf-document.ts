@@ -1,5 +1,11 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
-import type { PDFDocument as PDFDocumentType, PDFFont, PDFPage, RGB } from "pdf-lib";
+import type {
+  PDFDocument as PDFDocumentType,
+  PDFFont,
+  PDFImage,
+  PDFPage,
+  RGB,
+} from "pdf-lib";
 import type {
   DomainBreakdownRow,
   KatzResultRow,
@@ -37,6 +43,11 @@ export type MedicalPdfDocumentInput = {
   katzRows: KatzResultRow[];
   rationale: string;
   recommendation: string;
+  logoPngBytes?: Uint8Array;
+  headerTitle?: string;
+  headerSubtitle?: string;
+  preparedForNote?: string;
+  disclaimer?: string;
 };
 
 type Fonts = {
@@ -103,13 +114,232 @@ class MedicalPdfWriter {
   private page: PDFPage;
   private y: number;
   private readonly pages: PDFPage[] = [];
+  private readonly disclaimer?: string;
+  private readonly headerTitle?: string;
+  private readonly headerSubtitle?: string;
+  private readonly preparedForNote?: string;
+  private readonly logo?: PDFImage;
 
-  constructor(pdfDoc: PDFDocumentType, fonts: Fonts) {
+  constructor(
+    pdfDoc: PDFDocumentType,
+    fonts: Fonts,
+    disclaimer?: string,
+    header?: Pick<
+      MedicalPdfDocumentInput,
+      "headerTitle" | "headerSubtitle" | "preparedForNote"
+    >,
+    logo?: PDFImage,
+  ) {
     this.pdfDoc = pdfDoc;
     this.fonts = fonts;
     this.page = pdfDoc.addPage(PAGE_SIZE);
     this.pages.push(this.page);
     this.y = PAGE_H - MARGIN;
+    this.disclaimer = disclaimer;
+    this.headerTitle = header?.headerTitle;
+    this.headerSubtitle = header?.headerSubtitle;
+    this.preparedForNote = header?.preparedForNote;
+    this.logo = logo;
+  }
+
+  private drawPrintLikeHeader(): void {
+    // Mimic `components/assessment/medical/print-report.tsx` header.
+    const title = this.headerTitle ?? "DementiAware Clinical Summary";
+    const subtitle =
+      this.headerSubtitle ?? "Medical Professional / Trained Specialist Report";
+    const preparedFor =
+      this.preparedForNote ??
+      "Prepared for restricted Clinical Central Dashboard record";
+
+    const headerTop = this.y;
+    const headerRowH = 58;
+    let headerBottom = headerTop - headerRowH;
+
+    if (this.logo) {
+      const maxLogoH = 50;
+      const maxLogoW = 200;
+      const scale = Math.min(maxLogoW / this.logo.width, maxLogoH / this.logo.height);
+      const logoW = this.logo.width * scale;
+      const logoH = this.logo.height * scale;
+
+      const badgeSize = 44;
+      const badgeX = MARGIN + CONTENT_W - badgeSize;
+      const badgeScale = Math.min(
+        badgeSize / this.logo.width,
+        badgeSize / this.logo.height,
+      );
+      const badgeW = this.logo.width * badgeScale;
+      const badgeH = this.logo.height * badgeScale;
+      this.page.drawImage(this.logo, {
+        x: badgeX + (badgeSize - badgeW) / 2,
+        y: headerTop - badgeH,
+        width: badgeW,
+        height: badgeH,
+      });
+
+      const titleX = MARGIN + logoW + 14;
+      const titleBlockW = Math.max(badgeX - titleX - 8, 160);
+
+      this.page.drawImage(this.logo, {
+        x: MARGIN,
+        y: headerTop - logoH,
+        width: logoW,
+        height: logoH,
+      });
+
+      const titleLines = wrapText(title, this.fonts.bold, 16, titleBlockW);
+      let titleY = headerTop - 18;
+      for (const line of titleLines) {
+        this.drawText(line, titleX, titleY, 16, this.fonts.bold, COLORS.text);
+        titleY -= 18;
+      }
+
+      const subLines = wrapText(subtitle, this.fonts.regular, 9, titleBlockW);
+      let subY = titleY - 4;
+      for (const line of subLines) {
+        this.drawText(line, titleX, subY, 9, this.fonts.regular, COLORS.textMuted);
+        subY -= 11;
+      }
+
+      headerBottom = Math.min(headerTop - logoH, subY - 6);
+    } else {
+      this.drawText(title, MARGIN, headerTop - 18, 16, this.fonts.bold, COLORS.text);
+      this.drawText(subtitle, MARGIN, headerTop - 34, 9, this.fonts.regular, COLORS.textMuted);
+      headerBottom = headerTop - headerRowH;
+    }
+
+    const borderY = headerBottom - 8;
+    this.page.drawRectangle({
+      x: MARGIN,
+      y: borderY,
+      width: CONTENT_W,
+      height: 4,
+      color: COLORS.purple,
+    });
+
+    // Prepared-for note box
+    const noteTop = borderY - 12;
+    const noteLines = wrapText(preparedFor, this.fonts.regular, 9, CONTENT_W - 24);
+    const noteH = 14 + noteLines.length * 12 + 10;
+    this.drawRect(MARGIN, noteTop - noteH, CONTENT_W, noteH, {
+      fill: COLORS.purpleLight,
+      border: COLORS.purpleLine,
+    });
+    this.drawText(preparedFor, MARGIN + 12, noteTop - 20, 9, this.fonts.bold, COLORS.purpleDark);
+
+    this.y = noteTop - noteH - 18;
+  }
+
+  private drawSectionCards(section: PrintReportSection): void {
+    // Title
+    this.ensureSpace(26);
+    this.drawText(section.title, MARGIN, this.y - 14, 13, this.fonts.bold, COLORS.text);
+    this.advance(22);
+
+    // 2-column card grid
+    const colGap = 10;
+    const cardW = (CONTENT_W - colGap) / 2;
+    const cardPadX = 10;
+    const headerSize = 7.5;
+    const valueSize = 10;
+    const headerH = 12;
+    const valueH = 14;
+    const cardH = 44;
+
+    for (let i = 0; i < section.rows.length; i += 2) {
+      this.ensureSpace(cardH + 10);
+      const rowTop = this.y;
+
+      const drawCard = (x: number, label: string, value: string) => {
+        this.drawRect(x, rowTop - cardH, cardW, cardH, {
+          fill: COLORS.white,
+          border: COLORS.border,
+        });
+        this.drawText(label.toUpperCase(), x + cardPadX, rowTop - 16, headerSize, this.fonts.bold, COLORS.textMuted);
+
+        const lines = wrapText(value, this.fonts.bold, valueSize, cardW - cardPadX * 2);
+        this.drawText(lines[0] ?? "", x + cardPadX, rowTop - 32, valueSize, this.fonts.bold, COLORS.text);
+      };
+
+      const left = section.rows[i];
+      drawCard(MARGIN, left.label, left.value);
+
+      const right = section.rows[i + 1];
+      if (right) {
+        drawCard(MARGIN + cardW + colGap, right.label, right.value);
+      }
+
+      this.y = rowTop - cardH - 10;
+    }
+  }
+
+  private drawInterpretationBox(
+    title: string,
+    matrixInterpretation: string,
+    dashboardCategory: string,
+    rationale: string,
+    recommendation: string,
+  ): void {
+    this.ensureSpace(120);
+    this.drawRect(MARGIN, this.y - 0, CONTENT_W, 0, { }); // no-op for spacing consistency
+
+    // Outer box
+    const boxPad = 12;
+    const startY = this.y;
+    // We'll compute height based on wrapped text, with pagination support by splitting blocks.
+    // Keep it simple: draw as three stacked wrapped blocks with borders, similar to existing notes.
+
+    this.drawRect(MARGIN, startY - 0, 0, 0, { }); // no-op
+
+    // Title
+    this.drawRect(MARGIN, startY - 0, 0, 0, { }); // no-op
+    this.drawText(title, MARGIN, startY - 14, 13, this.fonts.bold, COLORS.text);
+    this.y = startY - 24;
+
+    // Interpretation headline
+    this.drawText(matrixInterpretation, MARGIN, this.y - 18, 14, this.fonts.bold, COLORS.purpleDark);
+    this.drawText(
+      `Dashboard category: ${dashboardCategory}`,
+      MARGIN,
+      this.y - 34,
+      9,
+      this.fonts.regular,
+      COLORS.textMuted,
+    );
+    this.advance(46);
+
+    const drawWrappedParagraph = (text: string) => {
+      const lines = wrapText(text, this.fonts.regular, 9.5, CONTENT_W);
+      this.ensureSpace(lines.length * 12 + 10);
+      let y = this.y - 12;
+      for (const line of lines) {
+        this.drawText(line, MARGIN, y, 9.5, this.fonts.regular, COLORS.text);
+        y -= 12;
+      }
+      this.y = y - 10;
+    };
+
+    drawWrappedParagraph(rationale);
+    drawWrappedParagraph(recommendation);
+  }
+
+  private drawDisclaimerBlock(): void {
+    if (!this.disclaimer) return;
+
+    const lines = wrapText(this.disclaimer, this.fonts.regular, 8.5, CONTENT_W);
+    const blockH = 14 + lines.length * 11 + 12;
+    this.ensureSpace(blockH + 10);
+
+    // Top divider line like Print footer.
+    this.drawLine(MARGIN, this.y, PAGE_W - MARGIN, this.y, COLORS.border);
+    this.advance(10);
+
+    let y = this.y - 10;
+    for (const line of lines) {
+      this.drawText(line, MARGIN, y, 8.5, this.fonts.regular, COLORS.textLight);
+      y -= 11;
+    }
+    this.y = y - 8;
   }
 
   async save(): Promise<Uint8Array> {
@@ -235,91 +465,25 @@ class MedicalPdfWriter {
         font: this.fonts.regular,
         color: COLORS.textLight,
       });
+
+      // Print version footer note (short & wrapped).
+      if (this.disclaimer && index === total - 1) {
+        const maxW = CONTENT_W - 20;
+        const lines = wrapText(this.disclaimer, this.fonts.regular, 7, maxW);
+        lines.slice(0, 3).forEach((line, i) => {
+          page.drawText(sanitizePdfText(line), {
+            x: MARGIN + 10,
+            y: footerY - 10 - i * 9,
+            size: 7,
+            font: this.fonts.regular,
+            color: COLORS.textLight,
+          });
+        });
+      }
     });
   }
 
-  private drawReportHeader(input: MedicalPdfDocumentInput): void {
-    const { recordId, report, sections } = input;
-    const demographics = sections[0]?.rows ?? [];
-    const assessmentDate =
-      demographics.find((r) => r.label === "Assessment date")?.value ??
-      formatAssessmentDateWithLocale(report.assessmentDate, "en");
-    const clinician =
-      demographics.find((r) => r.label === "Clinician")?.value ??
-      report.clinicianIdentifier;
-    const patientId =
-      demographics.find((r) => r.label === "Patient ID")?.value ??
-      report.demographics.patientId;
-
-    this.drawRect(MARGIN, PAGE_H - MARGIN - 4, CONTENT_W, 4, { fill: COLORS.purple });
-
-    let cursorY = PAGE_H - MARGIN - 22;
-    this.drawText("DementiAware", MARGIN, cursorY, 22, this.fonts.bold, COLORS.purple);
-    cursorY -= 28;
-    this.drawText(
-      "Medical Cognitive Assessment Report",
-      MARGIN,
-      cursorY,
-      14,
-      this.fonts.bold,
-      COLORS.text,
-    );
-    cursorY -= 18;
-    this.drawText(
-      "Structured MoCA-P and Katz ADL clinical summary",
-      MARGIN,
-      cursorY,
-      9,
-      this.fonts.regular,
-      COLORS.textMuted,
-    );
-
-    const metaTop = cursorY - 28;
-    const metaH = 52;
-    this.drawRect(MARGIN, metaTop - metaH, CONTENT_W, metaH, {
-      fill: COLORS.surface,
-      border: COLORS.border,
-    });
-
-    const colW = CONTENT_W / 2 - 16;
-    const leftX = MARGIN + 12;
-    const rightX = MARGIN + CONTENT_W / 2 + 4;
-    const row1Y = metaTop - 18;
-    const row2Y = metaTop - 36;
-
-    const metaPairs: Array<[string, string, number]> = [
-      ["Record ID", recordId, leftX],
-      ["Patient ID", patientId, rightX],
-      ["Assessment date", assessmentDate, leftX],
-      ["Clinician", clinician || "Not provided", rightX],
-    ];
-
-    this.drawText(metaPairs[0][0], metaPairs[0][2], row1Y + 10, 7.5, this.fonts.regular, COLORS.textMuted);
-    this.drawText(metaPairs[0][1], metaPairs[0][2], row1Y, 9.5, this.fonts.bold, COLORS.text);
-    this.drawText(metaPairs[1][0], metaPairs[1][2], row1Y + 10, 7.5, this.fonts.regular, COLORS.textMuted);
-    this.drawText(
-      metaPairs[1][1],
-      metaPairs[1][2],
-      row1Y,
-      9.5,
-      this.fonts.bold,
-      COLORS.text,
-    );
-
-    this.drawText(metaPairs[2][0], metaPairs[2][2], row2Y + 10, 7.5, this.fonts.regular, COLORS.textMuted);
-    this.drawText(
-      metaPairs[2][1].length > colW / 5 ? metaPairs[2][1].slice(0, 40) : metaPairs[2][1],
-      metaPairs[2][2],
-      row2Y,
-      9.5,
-      this.fonts.regular,
-      COLORS.text,
-    );
-    this.drawText(metaPairs[3][0], metaPairs[3][2], row2Y + 10, 7.5, this.fonts.regular, COLORS.textMuted);
-    this.drawText(metaPairs[3][1], metaPairs[3][2], row2Y, 9.5, this.fonts.regular, COLORS.text);
-
-    this.y = metaTop - metaH - 20;
-  }
+  // (Old dashboard-focused header removed; we now mirror Print layout.)
 
   private drawKeyValueGrid(
     pairs: Array<{ label: string; value: string }>,
@@ -437,7 +601,11 @@ class MedicalPdfWriter {
       COLORS.textMuted,
     );
     const referralLines = wrapText(referral, this.fonts.regular, 9, half - 24);
-    referralLines.slice(0, 3).forEach((line, i) => {
+    const startY = row2Bottom - 34;
+    const minY = row2Bottom - tallCardH + 10;
+    const maxLines = Math.max(1, Math.floor((startY - minY) / 11) + 1);
+
+    referralLines.slice(0, maxLines).forEach((line, i) => {
       this.drawText(line, MARGIN + half + 12, row2Bottom - 34 - i * 11, 9, this.fonts.regular, COLORS.text);
     });
 
@@ -588,31 +756,12 @@ class MedicalPdfWriter {
 
   render(input: MedicalPdfDocumentInput): void {
     const { sections, domains, katzRows, report, rationale, recommendation } = input;
-    const demographics = sections[0]?.rows ?? [];
+    this.drawPrintLikeHeader();
 
-    const patientPairs = demographics
-      .filter((row) =>
-        ["Full name", "Age", "Sex (at birth)", "Education"].includes(row.label),
-      )
-      .map((row) => ({ label: row.label, value: row.value }));
-
-    if (patientPairs.length === 0) {
-      patientPairs.push(
-        {
-          label: "Full name",
-          value: report.demographics.fullName || "Not provided",
-        },
-        { label: "Age", value: String(report.demographics.age) },
-      );
-    }
-
-    this.drawReportHeader(input);
-
-    this.drawSectionHeading("Patient Information");
-    this.drawKeyValueGrid(patientPairs, 2);
-
-    this.drawSectionHeading("Score Summary");
-    this.drawScoreSummary(input);
+    // Mirror Print: render all `sections` as card grids (demographics + core scores).
+    sections.forEach((section) => {
+      this.drawSectionCards(section);
+    });
 
     this.drawSectionHeading("MoCA-P Domain Breakdown");
     this.drawTable(
@@ -648,13 +797,16 @@ class MedicalPdfWriter {
       { rowHeight: 24 },
     );
 
-    this.drawClinicalNotes(
+    this.drawInterpretationBox(
+      "Interpretation and Recommendation",
       report.interpretation.matrixInterpretation,
+      report.interpretation.label,
       rationale,
       recommendation,
-      report.referralAction || recommendation,
-      report.interpretation.label,
     );
+
+    // Mirror Print footer note placement (in-body), not just page footer.
+    this.drawDisclaimerBlock();
   }
 }
 
@@ -671,7 +823,21 @@ export async function buildMedicalAssessmentPdf(
   const regular = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  const writer = new MedicalPdfWriter(pdfDoc, { regular, bold });
+  const logo = input.logoPngBytes
+    ? await pdfDoc.embedPng(input.logoPngBytes)
+    : undefined;
+
+  const writer = new MedicalPdfWriter(
+    pdfDoc,
+    { regular, bold },
+    input.disclaimer,
+    {
+      headerTitle: input.headerTitle,
+      headerSubtitle: input.headerSubtitle,
+      preparedForNote: input.preparedForNote,
+    },
+    logo,
+  );
   writer.render(input);
   return writer.save();
 }

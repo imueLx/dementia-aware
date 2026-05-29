@@ -31,6 +31,19 @@ export const dashboardCopy = {
       diagnosticCategory: "Diagnostic Category",
       allCategories: "All categories",
       reset: "Reset filters",
+      categories: {
+        Normal: "Normal",
+        MCI: "MCI",
+        "Moderate Dementia": "Moderate Dementia",
+        "Severe Dementia": "Severe Dementia",
+      },
+      ageFilters: {
+        all: "All ages",
+        "under-65": "Under 65",
+        "65-74": "65-74",
+        "75-84": "75-84",
+        "85-plus": "85+",
+      },
     },
     table: {
       title: "Clinical Records",
@@ -72,19 +85,6 @@ export const dashboardCopy = {
       noMatchesDescription:
         "Try changing the patient ID, age range, or diagnostic category filters.",
     },
-    categories: {
-      Normal: "Normal",
-      MCI: "MCI",
-      "Moderate Dementia": "Moderate Dementia",
-      "Severe Dementia": "Severe Dementia",
-    },
-    ageFilters: {
-      all: "All ages",
-      "under-65": "Under 65",
-      "65-74": "65-74",
-      "75-84": "75-84",
-      "85-plus": "85+",
-    },
     sexLabels: {
       male: "Male",
       female: "Female",
@@ -121,6 +121,19 @@ export const dashboardCopy = {
       diagnosticCategory: "Diagnostic Category",
       allCategories: "All categories",
       reset: "Reset filters",
+      categories: {
+        Normal: "Normal",
+        MCI: "MCI",
+        "Moderate Dementia": "Katamtamang Dementia",
+        "Severe Dementia": "Malubhang Dementia",
+      },
+      ageFilters: {
+        all: "Lahat ng edad",
+        "under-65": "Mas mababa sa 65",
+        "65-74": "65-74",
+        "75-84": "75-84",
+        "85-plus": "85+",
+      },
     },
     table: {
       title: "Clinical Records",
@@ -161,19 +174,6 @@ export const dashboardCopy = {
       noMatchesTitle: "Walang record na tugma sa filters",
       noMatchesDescription:
         "Subukan baguhin ang patient ID, age range, o diagnostic category filters.",
-    },
-    categories: {
-      Normal: "Normal",
-      MCI: "MCI",
-      "Moderate Dementia": "Katamtamang Dementia",
-      "Severe Dementia": "Malubhang Dementia",
-    },
-    ageFilters: {
-      all: "Lahat ng edad",
-      "under-65": "Mas mababa sa 65",
-      "65-74": "65-74",
-      "75-84": "75-84",
-      "85-plus": "85+",
     },
     sexLabels: {
       male: "Lalaki",

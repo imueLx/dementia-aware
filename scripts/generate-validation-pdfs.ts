@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { readFile } from "node:fs/promises";
 import { lookupMedicalInterpretationMatrix } from "../lib/assessment/medical-interpretation-matrix";
 import { buildMedicalAssessmentPdf } from "../lib/assessment/medical-pdf-document";
 import {
@@ -11,6 +12,7 @@ import {
 } from "../lib/assessment/medical-report-utils";
 import type { MedicalClinicalRecord } from "../lib/data/medical-record-store";
 import { transformRecordToMedicalPayload } from "../lib/assessment/medical-transformers";
+import { medicalResultsCopy } from "../constants/i18n/medical-results";
 
 const PRINT_LABELS = {
   demographics: "Demographics",
@@ -110,6 +112,7 @@ async function generatePdfForCase(
     },
   });
   const recommendation = buildRecommendationText(report);
+  const resultsEn = medicalResultsCopy.en;
 
   const pdfBytes = await buildMedicalAssessmentPdf({
     recordId: record.recordId,
@@ -119,6 +122,13 @@ async function generatePdfForCase(
     katzRows,
     rationale,
     recommendation,
+    logoPngBytes: await readFile(
+      path.join(process.cwd(), "public", "dementia-aware-logo.png"),
+    ),
+    headerTitle: resultsEn.print.title,
+    headerSubtitle: resultsEn.print.subtitle,
+    preparedForNote: resultsEn.print.preparedFor,
+    disclaimer: resultsEn.print.generatedNote,
   });
 
   const outputPath = path.join(process.cwd(), fileName);

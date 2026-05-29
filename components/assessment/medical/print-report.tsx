@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import type { MedicalResultsCopy } from "@/constants/i18n/medical-results";
 import type { MedicalReportPayload } from "@/lib/assessment/medical-report-types";
 import {
@@ -59,18 +60,21 @@ export function PrintReport({ copy, report }: PrintReportProps) {
   return (
     <article className="print-only medical-report-print bg-white text-slate-950">
       <header className="border-b-4 border-purple-700 pb-5">
-        <div className="flex items-center justify-between gap-6">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-purple-700">
-              DementiAware
-            </p>
-            <h1 className="mt-1 text-3xl font-bold">{copy.title}</h1>
+        <div className="flex items-center gap-6">
+          <div className="relative h-14 w-52 shrink-0">
+            <Image
+              src="/dementia-aware-logo.png"
+              alt="DementiAware"
+              fill
+              className="object-contain object-left"
+              priority
+            />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl font-bold leading-tight">{copy.title}</h1>
             <p className="mt-1 text-sm font-semibold text-slate-600">
               {copy.subtitle}
             </p>
-          </div>
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-purple-200 text-lg font-bold text-purple-800">
-            DA
           </div>
         </div>
         <p className="mt-4 rounded-xl bg-purple-50 p-3 text-sm font-semibold text-purple-900">

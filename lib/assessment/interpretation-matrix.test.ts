@@ -195,6 +195,46 @@ test("Exact 6 medical matrix routing cases resolve correctly from lookupMedicalI
   assert.equal(res6.label, "Severe Dementia");
 });
 
+test("Lawton IADL scoring (English): female max 8 and binary points", async () => {
+  const { computeLawtonScore } = await import("./family-scoring");
+
+  const lawton: any = {
+    telephone: "independent",
+    shopping: "independent",
+    foodPreparation: "independent",
+    housekeeping: "independent",
+    laundry: "independent",
+    transportation: "independent",
+    medications: "independent",
+    finances: "independent",
+  };
+
+  const res = computeLawtonScore(lawton, "female");
+  assert.equal(res.maxScore, 8);
+  assert.equal(res.total, 8);
+});
+
+test("Lawton IADL scoring (English): male max 5 uses only male-scored subset", async () => {
+  const { computeLawtonScore } = await import("./family-scoring");
+
+  // Male-scored items: telephone, shopping, transportation, medications, finances (5 items).
+  // Non-scored items (for scoring) are intentionally dependent.
+  const lawton: any = {
+    telephone: "independent",
+    shopping: "independent",
+    foodPreparation: "dependent",
+    housekeeping: "dependent",
+    laundry: "dependent",
+    transportation: "independent",
+    medications: "independent",
+    finances: "independent",
+  };
+
+  const res = computeLawtonScore(lawton, "male");
+  assert.equal(res.maxScore, 5);
+  assert.equal(res.total, 5);
+});
+
 test("transformRecordToMedicalPayload recomputes legacy fallback records to correct matrix interpretation and actions", async () => {
   const { transformRecordToMedicalPayload } = await import("./medical-transformers");
   

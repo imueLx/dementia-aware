@@ -23,28 +23,29 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Return a user object with role
-        return { id: "clinician", name: "Clinician", role: "clinician" } as any;
+        return { id: "clinician", name: "Clinician", role: "clinician" };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        // @ts-ignore
-        token.role = (user as any).role || "clinician";
+      if (user && "role" in user) {
+        token.role = user.role as string;
       }
       return token;
     },
     async session({ session, token }) {
-      // @ts-ignore
-      session.user = session.user || {};
-      // @ts-ignore
-      session.user.role = (token as any).role;
+      if (session.user) {
+        session.user.role = token.role as string | undefined;
+      }
       return session;
     },
   },
   session: {
     strategy: "jwt",
+  },
+  pages: {
+    signIn: "/dashboard/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

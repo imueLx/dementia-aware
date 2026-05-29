@@ -84,7 +84,7 @@ export function PatientTable({
                 <td className="py-4 pr-4">
                   <DiagnosticBadge
                     category={record.diagnosticCategory}
-                    label={copy.categories?.[record.diagnosticCategory]}
+                    label={copy.filters.categories[record.diagnosticCategory]}
                   />
                 </td>
                 <td className="py-4">
@@ -118,7 +118,7 @@ export function PatientTable({
               </div>
               <DiagnosticBadge
                 category={record.diagnosticCategory}
-                label={copy.categories?.[record.diagnosticCategory]}
+                label={copy.filters.categories[record.diagnosticCategory]}
               />
             </div>
             <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">

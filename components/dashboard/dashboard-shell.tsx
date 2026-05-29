@@ -61,7 +61,8 @@ export function DashboardShell({ initialRecords }: DashboardShellProps) {
   const handleDownloadPdf = (record: DashboardPatientRecord) => {
     // Open the server-side PDF for the given record in a new tab/window
     if (typeof window !== "undefined") {
-      window.open(`/api/medical/report/${record.assessmentId}`, "_blank");
+      const url = `/api/medical/report/${record.assessmentId}?ts=${Date.now()}`;
+      window.open(url, "_blank", "noopener,noreferrer");
     }
   };
 

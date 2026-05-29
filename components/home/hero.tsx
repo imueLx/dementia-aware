@@ -1,6 +1,7 @@
 "use client";
 
 import { LogoMark } from "@/components/layout/navbar";
+import Image from "next/image";
 import type { HomeCopy } from "@/constants/i18n/home";
 
 type HeroProps = {
@@ -17,6 +18,18 @@ export function Hero({ copy, onAssessmentOpen }: HeroProps) {
     >
       <div className="mx-auto grid min-h-[calc(100svh-5rem)] w-full max-w-7xl items-center gap-12 px-4 py-14 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-20">
         <div className="max-w-3xl">
+          <div className="mb-6">
+            <div className="inline-flex rounded-2xl bg-slate-950/95 p-3 shadow-lg shadow-slate-900/10">
+              <Image
+                src="/dementia-aware-logo.png"
+                alt="DementiAware"
+                width={520}
+                height={140}
+                priority
+                className="h-14 w-auto max-w-full object-contain drop-shadow-[0_3px_10px_rgba(0,0,0,0.35)] sm:h-16"
+              />
+            </div>
+          </div>
           <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-purple-100 bg-white px-4 py-2 text-sm font-bold text-purple-800 shadow-sm">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
             {copy.hero.eyebrow}

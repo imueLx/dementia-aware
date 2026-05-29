@@ -1,15 +1,13 @@
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { listMedicalRecords } from "@/lib/data/medical-record-repository";
 import { transformRecordToDashboardRecord } from "@/lib/assessment/medical-transformers";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/options";
 import { redirect } from "next/navigation";
+import { getClinicianSession } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const session = await getServerSession(authOptions as any);
-  if (!session || (session.user as any)?.role !== "clinician") {
+  if (!(await getClinicianSession())) {
     redirect("/dashboard/login");
   }
 

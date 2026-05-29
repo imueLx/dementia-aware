@@ -116,7 +116,7 @@ export function PatientDetailDrawer({
             </div>
             <div className="flex items-center gap-3">
               <a
-                href={`/api/medical/report/${record.assessmentId}`}
+                href={`/api/medical/report/${record.assessmentId}?ts=${Date.now()}`}
                 className="inline-flex items-center justify-center rounded-full border border-purple-200 bg-white px-3 py-2 text-sm font-bold text-purple-800 transition hover:bg-purple-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
               >
                 {dashboardCopy.actions?.downloadPdf ?? "Download PDF"}
@@ -142,7 +142,9 @@ export function PatientDetailDrawer({
               </h3>
               <DiagnosticBadge
                 category={record.diagnosticCategory}
-                label={dashboardCopy.categories?.[record.diagnosticCategory]}
+                label={
+                  dashboardCopy.filters.categories[record.diagnosticCategory]
+                }
               />
             </div>
             <dl className="mt-4 grid gap-3 sm:grid-cols-2">

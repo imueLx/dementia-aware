@@ -1,49 +1,17 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { LogoMark } from "@/components/layout/logo-mark";
 import { useCopy } from "@/lib/i18n/use-copy";
 import { useLanguage } from "@/lib/i18n/use-language";
 import type { Language } from "@/lib/i18n/language-types";
 
-const logoSrc = "/dementia-aware-logo.png";
+export { LogoMark } from "@/components/layout/logo-mark";
 
 type NavbarProps = {
   onAssessmentOpen: () => void;
 };
-
-type LogoMarkProps = {
-  className?: string;
-  size?: "sm" | "lg";
-};
-
-export function LogoMark({ className = "", size = "sm" }: LogoMarkProps) {
-  const [logoFailed, setLogoFailed] = useState(false);
-  const dimensions = size === "lg" ? "h-16 w-16" : "h-11 w-11";
-  const imageSize = size === "lg" ? 64 : 44;
-
-  return (
-    <span
-      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-purple-100 bg-white text-sm font-bold text-purple-700 shadow-sm ${dimensions} ${className}`}
-      aria-hidden="true"
-    >
-      {logoFailed ? (
-        <span>DA</span>
-      ) : (
-        <Image
-          src={logoSrc}
-          alt=""
-          width={imageSize}
-          height={imageSize}
-          className="h-full w-full object-contain p-1"
-          onError={() => setLogoFailed(true)}
-          priority={size === "lg"}
-        />
-      )}
-    </span>
-  );
-}
 
 export function Navbar({ onAssessmentOpen }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);

@@ -75,7 +75,7 @@ export function InterpretationPanel({
                       : "bg-purple-50 text-purple-800"
                   }`}
                 >
-                  {dashboardCopy.categories?.[label] ?? label}
+                  {dashboardCopy.filters.categories[label] ?? label}
                 </span>
               ))}
             </div>

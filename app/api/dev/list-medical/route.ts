@@ -5,11 +5,8 @@ export async function GET() {
   if (String(process.env.ENABLE_DEV_ROUTES ?? "false") !== "true") {
     return new Response(null, { status: 404 });
   }
-  // Require authenticated clinician session for dev routes as well
-  const { getServerSession } = await import("next-auth/next");
-  const { authOptions } = await import("@/lib/auth/options");
-  const session = await getServerSession(authOptions as any);
-  if (!session || (session.user as any)?.role !== "clinician") {
+  const { getClinicianSession } = await import("@/lib/auth/session");
+  if (!(await getClinicianSession())) {
     return new Response(null, { status: 401 });
   }
   try {

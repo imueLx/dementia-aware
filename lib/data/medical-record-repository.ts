@@ -39,7 +39,7 @@ export async function listMedicalRecords() {
       .sort({ assessmentDate: -1 })
       .toArray();
 
-    return docs as MedicalClinicalRecord[];
+    return docs as unknown as MedicalClinicalRecord[];
   }
 
   return Array.from(getMedicalRecordStore().values())
@@ -60,7 +60,7 @@ export async function getMedicalRecordById(recordId: string) {
       return null;
     }
 
-    return record as MedicalClinicalRecord;
+    return record as unknown as MedicalClinicalRecord;
   }
 
   const record = getMedicalRecordStore().get(recordId);
