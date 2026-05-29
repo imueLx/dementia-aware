@@ -225,6 +225,10 @@ export function buildPrintSections(
         { label: options.labels.katzScore, value: `${report.katz.total}/6` },
         {
           label: options.labels.clinicalInterpretation,
+          value: report.interpretation.matrixInterpretation,
+        },
+        {
+          label: "Dashboard category",
           value: report.interpretation.label,
         },
       ],

@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { MedicalAssessmentPayload } from "@/lib/assessment/medical-types";
 import type { DashboardFilters } from "@/lib/dashboard/dashboard-types";
 import type { MedicalClinicalRecord } from "@/lib/data/medical-record-store";
+import { lookupMedicalInterpretationMatrix } from "./medical-interpretation-matrix";
 
 const persistedMedicalRecordSchema = z.object({
   recordId: z.string().min(1),
@@ -47,6 +48,8 @@ const persistedMedicalRecordSchema = z.object({
     matrixInterpretation: z.string().optional(),
     summary: z.string(),
     recommendation: z.string(),
+    referralAction: z.string().optional(),
+    dashboardCategory: z.string().optional(),
   }),
   createdAt: z.string().min(1),
   source: z.literal("medical-professional"),
@@ -94,6 +97,8 @@ export function transformMedicalPayloadToRecord(
       matrixInterpretation: payload.interpretation.matrixInterpretation,
       summary: payload.interpretation.recommendation,
       recommendation: payload.interpretation.referralAction,
+      referralAction: payload.interpretation.referralAction,
+      dashboardCategory: payload.interpretation.label,
     },
     createdAt: new Date().toISOString(),
     source: "medical-professional",
@@ -105,6 +110,19 @@ export function transformMedicalPayloadToRecord(
 export function transformRecordToMedicalPayload(
   record: MedicalClinicalRecord,
 ): MedicalAssessmentPayload {
+  const matrixLookup = lookupMedicalInterpretationMatrix(
+    record.moca.adjustedTotal,
+    record.katz.total
+  );
+
+  const isLegacy = !record.interpretation.matrixInterpretation ||
+    record.interpretation.matrixInterpretation === record.interpretation.diagnosticCategory ||
+    ["Normal", "MCI", "Moderate Dementia", "Severe Dementia"].includes(record.interpretation.matrixInterpretation);
+
+  const matrixInterpretation = isLegacy ? matrixLookup.matrixInterpretation : record.interpretation.matrixInterpretation!;
+  const recommendation = isLegacy ? matrixLookup.recommendation : record.interpretation.summary;
+  const referralAction = isLegacy ? matrixLookup.referralAction : (record.interpretation.referralAction ?? record.interpretation.recommendation);
+
   return {
     track: "medical-professional",
     demographics: {
@@ -130,14 +148,12 @@ export function transformRecordToMedicalPayload(
     },
     interpretation: {
       label: record.interpretation.diagnosticCategory,
-      matrixInterpretation:
-        record.interpretation.matrixInterpretation ??
-        record.interpretation.diagnosticCategory,
-      recommendation: record.interpretation.summary,
-      referralAction: record.interpretation.recommendation,
+      matrixInterpretation,
+      recommendation,
+      referralAction,
     },
-    recommendation: record.interpretation.summary,
-    referralAction: record.interpretation.recommendation,
+    recommendation,
+    referralAction,
     assessmentDate: record.assessmentDate,
     clinicianIdentifier: record.clinicianNameOrId,
     transmissionTarget: "restricted-clinical-central-dashboard",

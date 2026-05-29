@@ -138,3 +138,96 @@ test("Mini-Cog recall counts only active word list", async () => {
   }), 1);
   assert.equal(score, 3);
 });
+
+test("26+ normative hint is display-only and separate from matrix routing", async () => {
+  const { isAdjustedMocaNormativeNormal } = await import("./medical-interpretation-matrix");
+  const normalScore = 27;
+  const borderlineScore = 23;
+  
+  assert.equal(isAdjustedMocaNormativeNormal(normalScore), true);
+  assert.equal(isAdjustedMocaNormativeNormal(borderlineScore), false);
+  
+  // Both fall into the same "21-30" cognitive band for matrix routing
+  const normalResult = lookupMedicalInterpretationMatrix(normalScore, 6);
+  const borderlineResult = lookupMedicalInterpretationMatrix(borderlineScore, 6);
+  
+  assert.equal(normalResult.matrixInterpretation, "Healthy Aging");
+  assert.equal(borderlineResult.matrixInterpretation, "Healthy Aging");
+});
+
+test("Lawton functional band resolves correctly based on gender-specific maxScore", () => {
+  const femaleResult = lookupCaregiverInterpretationMatrix(5, { total: 8, maxScore: 8 });
+  const maleResult = lookupCaregiverInterpretationMatrix(5, { total: 5, maxScore: 5 });
+  
+  assert.equal(femaleResult.matrixInterpretation.includes("Low Risk"), true);
+  assert.equal(maleResult.matrixInterpretation.includes("Low Risk"), true);
+});
+
+test("Exact 6 medical matrix routing cases resolve correctly from lookupMedicalInterpretationMatrix", () => {
+  // Case 1: Adjusted 30, Katz 6
+  const res1 = lookupMedicalInterpretationMatrix(30, 6);
+  assert.equal(res1.matrixInterpretation, "Healthy Aging");
+  assert.equal(res1.label, "Normal");
+
+  // Case 2: Adjusted 24, Katz 4
+  const res2 = lookupMedicalInterpretationMatrix(24, 4);
+  assert.equal(res2.matrixInterpretation, "Isolated Physical Deconditioning");
+  assert.equal(res2.label, "Normal");
+
+  // Case 3: Adjusted 23, Katz 1
+  const res3 = lookupMedicalInterpretationMatrix(23, 1);
+  assert.equal(res3.matrixInterpretation, "Severe Physical Disability");
+  assert.equal(res3.label, "Normal");
+
+  // Case 4: Adjusted 18, Katz 6
+  const res4 = lookupMedicalInterpretationMatrix(18, 6);
+  assert.equal(res4.matrixInterpretation, "Early Cognitive Decline / Mild MCI");
+  assert.equal(res4.label, "MCI");
+
+  // Case 5: Adjusted 10, Katz 4
+  const res5 = lookupMedicalInterpretationMatrix(10, 4);
+  assert.equal(res5.matrixInterpretation, "Cognitive Decline with Functional Deficits");
+  assert.equal(res5.label, "Moderate Dementia");
+
+  // Case 6: Adjusted 1, Katz 0
+  const res6 = lookupMedicalInterpretationMatrix(1, 0);
+  assert.equal(res6.matrixInterpretation, "Advanced Neurodegenerative State");
+  assert.equal(res6.label, "Severe Dementia");
+});
+
+test("transformRecordToMedicalPayload recomputes legacy fallback records to correct matrix interpretation and actions", async () => {
+  const { transformRecordToMedicalPayload } = await import("./medical-transformers");
+  
+  const legacyRecord: any = {
+    recordId: "med_test_legacy",
+    patientId: "CASE-LEGACY",
+    caseNumber: "CASE-LEGACY",
+    fullName: "Legacy Patient",
+    age: 75,
+    sexAssignedAtBirth: "female",
+    yearsOfFormalEducation: "7-12",
+    clinicianNameOrId: "DR-TEST",
+    assessmentDate: new Date().toISOString(),
+    moca: {
+      rawTotal: 9,
+      educationAdjustment: 1,
+      adjustedTotal: 10,
+      domainBreakdown: [],
+    },
+    katz: {
+      total: 4,
+      itemBreakdown: [],
+    },
+    interpretation: {
+      diagnosticCategory: "Moderate Dementia",
+      summary: "Old legacy summary.",
+      recommendation: "Old legacy rec.",
+    },
+  };
+  
+  const payload = transformRecordToMedicalPayload(legacyRecord);
+  
+  assert.equal(payload.interpretation.matrixInterpretation, "Cognitive Decline with Functional Deficits");
+  assert.match(payload.interpretation.referralAction, /Geriatric Co-Management/i);
+  assert.match(payload.interpretation.recommendation, /Geriatric Co-Management/i);
+});

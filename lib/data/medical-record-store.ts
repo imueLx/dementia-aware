@@ -38,6 +38,8 @@ export type MedicalClinicalRecord = {
     matrixInterpretation?: string;
     summary: string;
     recommendation: string;
+    referralAction?: string;
+    dashboardCategory?: string;
   };
   createdAt: string;
   source: "medical-professional";

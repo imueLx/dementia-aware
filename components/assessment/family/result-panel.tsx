@@ -3,6 +3,7 @@
 import type { CaregiverCopy } from "@/constants/i18n/caregiver";
 import type { CaregiverResultPayload } from "@/lib/assessment/family-types";
 import { useCopy } from "@/lib/i18n/use-copy";
+import { useLanguage } from "@/lib/i18n/use-language";
 
 type ResultPanelProps = {
   copy: CaregiverCopy["result"];
@@ -11,6 +12,7 @@ type ResultPanelProps = {
 
 export function ResultPanel({ copy, result }: ResultPanelProps) {
   const caregiverCopy = useCopy("caregiver") as CaregiverCopy;
+  const { language } = useLanguage();
 
   if (!result) {
     return null;
@@ -72,21 +74,27 @@ export function ResultPanel({ copy, result }: ResultPanelProps) {
         </p>
         <p className="mt-1 text-xs font-semibold text-slate-500">{interpretationLabel}</p>
         <h3 className="mt-2 text-xl font-bold leading-snug text-slate-950">
-          {result.interpretation.matrixInterpretation}
+          {language === "fil"
+            ? result.interpretation.matrixInterpretationFil
+            : result.interpretation.matrixInterpretation}
         </h3>
 
         <p className="mt-5 text-sm font-bold uppercase tracking-wide text-purple-700">
           {copy.referralGuidance}
         </p>
         <p className="mt-2 text-base leading-7 text-slate-700">
-          {result.interpretation.referralGuidance}
+          {language === "fil"
+            ? result.interpretation.referralGuidanceFil
+            : result.interpretation.referralGuidance}
         </p>
 
         <p className="mt-5 text-sm font-bold uppercase tracking-wide text-purple-700">
           {copy.caregiverSummary}
         </p>
         <p className="mt-2 text-base leading-7 text-slate-700">
-          {result.interpretation.plainLanguageSummary}
+          {language === "fil"
+            ? result.interpretation.matrixInterpretationFil
+            : result.interpretation.plainLanguageSummary}
         </p>
       </div>
 

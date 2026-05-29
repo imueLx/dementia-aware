@@ -537,6 +537,7 @@ class MedicalPdfWriter {
     rationale: string,
     recommendation: string,
     referralAction: string,
+    dashboardCategory?: string,
   ): void {
     this.drawSectionHeading("Clinical Notes & Interpretation");
 
@@ -551,6 +552,11 @@ class MedicalPdfWriter {
     });
     this.drawText(interpretation, MARGIN + 12, this.y - 18, 12, this.fonts.bold, COLORS.purpleDark);
     this.advance(36);
+
+    if (dashboardCategory) {
+      this.drawText(`Dashboard Category: ${dashboardCategory}`, MARGIN, this.y - 10, 8.5, this.fonts.bold, COLORS.textMuted);
+      this.advance(16);
+    }
 
     const blocks: Array<{ title: string; body: string }> = [
       { title: "Clinical rationale", body: rationale },
@@ -646,7 +652,8 @@ class MedicalPdfWriter {
       report.interpretation.matrixInterpretation,
       rationale,
       recommendation,
-      recommendation,
+      report.referralAction || recommendation,
+      report.interpretation.label,
     );
   }
 }
