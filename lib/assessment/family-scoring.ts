@@ -1,8 +1,8 @@
+import { lookupCaregiverInterpretationMatrix } from "./caregiver-interpretation-matrix";
 import {
   lawtonItems,
   miniCogWordLists,
   type CaregiverAssessmentTotals,
-  type CaregiverInterpretation,
   type CaregiverResultPayload,
   type FamilyAssessmentFormValues,
   type LawtonFormValues,
@@ -11,12 +11,21 @@ import {
   type PatientSex,
 } from "./family-types";
 
+export function countActiveMiniCogRecall(
+  miniCog: FamilyAssessmentFormValues["miniCog"],
+): number {
+  const wordList =
+    miniCogWordLists.find((list) => list.id === miniCog.wordListId) ??
+    miniCogWordLists[0];
+
+  return wordList.words.filter((word) => Boolean(miniCog.recalledWords[word]))
+    .length;
+}
+
 export function computeMiniCogScore(
   miniCog: FamilyAssessmentFormValues["miniCog"],
 ): number {
-  const recallTotal = Object.values(miniCog.recalledWords).filter(
-    Boolean,
-  ).length;
+  const recallTotal = countActiveMiniCogRecall(miniCog);
   return Math.min(recallTotal + Number(miniCog.clockDrawingScore), 5);
 }
 
@@ -56,28 +65,8 @@ export function computeLawtonScore(
 export function computeCaregiverInterpretation(
   miniCogTotal: number,
   lawton: LawtonScoreResult,
-): CaregiverInterpretation {
-  const lawtonConcern = lawton.total <= Math.max(lawton.maxScore - 2, 0);
-
-  if (miniCogTotal <= 2 || lawtonConcern) {
-    return {
-      label: "Further medical evaluation recommended",
-      filipinoLabel: "Kinakailangan ng karagdagang pagsusuri ng doktor",
-      referralGuidance:
-        "Schedule an appointment with a Neurologist or Geriatrician. Take a screenshot or print this page to show them.",
-      plainLanguageSummary:
-        "The screening suggests it would be wise to discuss these results with a doctor, especially if changes are new or affecting daily life.",
-    };
-  }
-
-  return {
-    label: "Low risk of cognitive impairment",
-    filipinoLabel: "Mababang panganib sa pagkaulianin",
-    referralGuidance:
-      "Continue observing. Retake after a few weeks if concerns continue, worsen, or new symptoms appear.",
-    plainLanguageSummary:
-      "The current screening pattern suggests lower risk, but family observations still matter. Seek medical advice if concerns persist.",
-  };
+) {
+  return lookupCaregiverInterpretationMatrix(miniCogTotal, lawton);
 }
 
 export function buildCaregiverSummary(

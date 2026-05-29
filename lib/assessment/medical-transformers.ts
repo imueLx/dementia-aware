@@ -44,6 +44,7 @@ const persistedMedicalRecordSchema = z.object({
       "Moderate Dementia",
       "Severe Dementia",
     ]),
+    matrixInterpretation: z.string().optional(),
     summary: z.string(),
     recommendation: z.string(),
   }),
@@ -90,8 +91,9 @@ export function transformMedicalPayloadToRecord(
     },
     interpretation: {
       diagnosticCategory: payload.interpretation.label,
+      matrixInterpretation: payload.interpretation.matrixInterpretation,
       summary: payload.interpretation.recommendation,
-      recommendation: payload.referralAction,
+      recommendation: payload.interpretation.referralAction,
     },
     createdAt: new Date().toISOString(),
     source: "medical-professional",
@@ -128,6 +130,9 @@ export function transformRecordToMedicalPayload(
     },
     interpretation: {
       label: record.interpretation.diagnosticCategory,
+      matrixInterpretation:
+        record.interpretation.matrixInterpretation ??
+        record.interpretation.diagnosticCategory,
       recommendation: record.interpretation.summary,
       referralAction: record.interpretation.recommendation,
     },

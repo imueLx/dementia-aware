@@ -16,9 +16,8 @@ export function ResultPanel({ copy, result }: ResultPanelProps) {
     return null;
   }
   const interpretationLabel =
-    caregiverCopy.interpretationLabels?.[result.interpretation.label];
-  const referralGuidance =
-    caregiverCopy.referral?.[result.interpretation.label];
+    caregiverCopy.interpretationLabels?.[result.interpretation.label] ??
+    result.interpretation.label;
 
   const hasDifficulties = result.difficultySummary.length > 0;
 
@@ -71,15 +70,16 @@ export function ResultPanel({ copy, result }: ResultPanelProps) {
         <p className="text-xs font-bold uppercase tracking-wide text-purple-700">
           {copy.interpretation}
         </p>
-        <h3 className="mt-2 text-2xl font-bold text-slate-950">
-          {interpretationLabel ?? result.interpretation.label}
+        <p className="mt-1 text-xs font-semibold text-slate-500">{interpretationLabel}</p>
+        <h3 className="mt-2 text-xl font-bold leading-snug text-slate-950">
+          {result.interpretation.matrixInterpretation}
         </h3>
 
         <p className="mt-5 text-sm font-bold uppercase tracking-wide text-purple-700">
           {copy.referralGuidance}
         </p>
         <p className="mt-2 text-base leading-7 text-slate-700">
-          {referralGuidance ?? result.interpretation.referralGuidance}
+          {result.interpretation.referralGuidance}
         </p>
 
         <p className="mt-5 text-sm font-bold uppercase tracking-wide text-purple-700">

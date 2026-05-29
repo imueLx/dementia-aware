@@ -2,6 +2,7 @@
 
 import type { MedicalCopy } from "@/constants/i18n/medical";
 import type { MedicalAssessmentTotals } from "@/lib/assessment/medical-types";
+import { isAdjustedMocaNormativeNormal } from "@/lib/assessment/medical-scoring";
 import { useLanguage } from "@/lib/i18n/use-language";
 import { useCopy } from "@/lib/i18n/use-copy";
 
@@ -54,12 +55,7 @@ export function ScoreSummary({
     },
   ).format(new Date(assessmentDate));
 
-  const interpretationCopy = (
-    copy.interpretation as unknown as Record<
-      string,
-      { recommendation?: string; referralAction?: string }
-    >
-  )?.[totals.interpretation.label];
+  const normativeNormal = isAdjustedMocaNormativeNormal(totals.adjustedMocaTotal);
 
   return (
     <aside className="lg:sticky lg:top-24" aria-labelledby="summary-heading">
@@ -86,7 +82,7 @@ export function ScoreSummary({
             />
             <MetricCard
               label={copy.adjustedMoca}
-              value={`${totals.adjustedMocaTotal}/30`}
+              value={`${totals.adjustedMocaTotal}/30${normativeNormal ? " (26+ normative normal)" : ""}`}
               tone="purple"
             />
             <MetricCard
@@ -122,22 +118,17 @@ export function ScoreSummary({
           <p className="text-xs font-bold uppercase tracking-wide text-purple-100">
             {copy.interpretation}
           </p>
-          <p className="mt-1 text-2xl font-bold">
-            {totals.interpretation.label}
+          <p className="mt-1 text-lg font-bold leading-snug">
+            {totals.interpretation.matrixInterpretation}
+          </p>
+          <p className="mt-2 text-sm text-purple-100">
+            Dashboard category: {totals.interpretation.label}
           </p>
           <p className="mt-3 text-sm font-semibold text-purple-100">
             {copy.recommendation}
           </p>
           <p className="mt-1 text-sm leading-6 text-white/90">
-            {interpretationCopy?.recommendation ??
-              totals.interpretation.recommendation}
-          </p>
-          <p className="mt-3 text-sm font-semibold text-purple-100">
-            {copy.referralAction}
-          </p>
-          <p className="mt-1 text-sm leading-6 text-white/90">
-            {interpretationCopy?.referralAction ??
-              totals.interpretation.referralAction}
+            {totals.interpretation.recommendation}
           </p>
         </div>
 

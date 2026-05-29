@@ -1,8 +1,8 @@
+import { lookupMedicalInterpretationMatrix } from "./medical-interpretation-matrix";
 import {
   educationOptions,
   katzItems,
   mocaDomainDefinitions,
-  type ClinicalInterpretation,
   type EducationYearsOption,
   type KatzFormValues,
   type MedicalAssessmentFormValues,
@@ -11,6 +11,8 @@ import {
   type MocaDomainScore,
   type MocaFormValues,
 } from "./medical-types";
+
+export { isAdjustedMocaNormativeNormal } from "./medical-interpretation-matrix";
 
 const clampScore = (score: number, maxScore: number) => {
   if (Number.isNaN(score)) {
@@ -78,44 +80,8 @@ export function computeKatzScore(katz: KatzFormValues): number {
 export function computeClinicalInterpretation(
   adjustedMocaTotal: number,
   katzTotal: number,
-): ClinicalInterpretation {
-  if (adjustedMocaTotal >= 26 && katzTotal >= 5) {
-    return {
-      label: "Normal",
-      recommendation:
-        "Continue routine monitoring and provide education on brain health and follow-up if symptoms progress.",
-      referralAction:
-        "No urgent referral indicated from this scaffolded interpretation.",
-    };
-  }
-
-  if (adjustedMocaTotal >= 18 && katzTotal >= 4) {
-    return {
-      label: "MCI",
-      recommendation:
-        "Recommend clinical review, collateral history, and follow-up cognitive assessment.",
-      referralAction:
-        "Consider referral to a physician or memory clinic based on clinical judgment.",
-    };
-  }
-
-  if (adjustedMocaTotal >= 10 || katzTotal >= 2) {
-    return {
-      label: "Moderate Dementia",
-      recommendation:
-        "Recommend comprehensive medical evaluation and caregiver support planning.",
-      referralAction:
-        "Refer for formal diagnostic assessment and functional care planning.",
-    };
-  }
-
-  return {
-    label: "Severe Dementia",
-    recommendation:
-      "Recommend urgent comprehensive clinical review, safety planning, and caregiver support.",
-    referralAction:
-      "Refer to a specialist or appropriate clinical service for immediate follow-up.",
-  };
+) {
+  return lookupMedicalInterpretationMatrix(adjustedMocaTotal, katzTotal);
 }
 
 export function computeMedicalAssessmentTotals(

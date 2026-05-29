@@ -1,3 +1,4 @@
+import { lookupMedicalInterpretationMatrix } from "./medical-interpretation-matrix";
 import {
   katzItems,
   type ClinicalInterpretationLabel,
@@ -131,11 +132,17 @@ export function buildClinicalRationale(
   return `${options.rationale.adjustedPrefix} ${report.moca.adjustedTotal}/30 ${options.rationale.withConnector} ${functionalNote} ${domainNote}`;
 }
 
-export function buildRecommendationText(
-  report: MedicalReportPayload,
-  recommendations: Partial<Record<ClinicalInterpretationLabel, string>>,
-) {
-  return recommendations[report.interpretation.label] ?? report.recommendation;
+/** Stored matrix action text — single source for UI and PDF (no i18n override). */
+export function buildRecommendationText(report: MedicalReportPayload) {
+  return report.recommendation;
+}
+
+export function buildReferralActionText(report: MedicalReportPayload) {
+  return report.referralAction;
+}
+
+export function buildMatrixInterpretationText(report: MedicalReportPayload) {
+  return report.interpretation.matrixInterpretation;
 }
 
 export function buildPrintSections(
@@ -293,17 +300,14 @@ export function createMockMedicalReport(): MedicalAssessmentPayload {
         feeding: "independent",
       },
     },
-    interpretation: {
-      label: "MCI",
-      recommendation:
-        "Recommend clinical review, collateral history, and follow-up cognitive assessment.",
-      referralAction:
-        "Consider referral to a physician or memory clinic based on clinical judgment.",
-    },
-    recommendation:
-      "Recommend clinical review, collateral history, and follow-up cognitive assessment.",
-    referralAction:
-      "Consider referral to a physician or memory clinic based on clinical judgment.",
+    ...(() => {
+      const interpretation = lookupMedicalInterpretationMatrix(21, 5);
+      return {
+        interpretation,
+        recommendation: interpretation.recommendation,
+        referralAction: interpretation.referralAction,
+      };
+    })(),
     assessmentDate,
     clinicianIdentifier: "DR-SAMPLE-01",
     transmissionTarget: "restricted-clinical-central-dashboard",

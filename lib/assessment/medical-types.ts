@@ -84,7 +84,11 @@ export type MocaDomainScore = {
 };
 
 export type ClinicalInterpretation = {
+  /** Dashboard diagnostic bucket (Normal / MCI / Moderate Dementia / Severe Dementia). */
   label: ClinicalInterpretationLabel;
+  /** PDF matrix row interpretation (e.g. Healthy Aging). */
+  matrixInterpretation: string;
+  /** PDF matrix action / referral text (single source for recommendation + referral). */
   recommendation: string;
   referralAction: string;
 };

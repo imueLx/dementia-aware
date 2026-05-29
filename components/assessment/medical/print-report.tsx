@@ -54,10 +54,7 @@ export function PrintReport({ copy, report }: PrintReportProps) {
     domainLabels: medicalCopy.moca.domains,
     rationale: medicalResultsCopy.rationale,
   });
-  const recommendation = buildRecommendationText(
-    report,
-    medicalResultsCopy.recommendations,
-  );
+  const recommendation = buildRecommendationText(report);
 
   return (
     <article className="print-only medical-report-print bg-white text-slate-950">
@@ -172,7 +169,10 @@ export function PrintReport({ copy, report }: PrintReportProps) {
             {copy.interpretation}
           </h2>
           <p className="mt-2 text-xl font-bold text-purple-800">
-            {report.interpretation.label}
+            {report.interpretation.matrixInterpretation}
+          </p>
+          <p className="mt-1 text-sm text-slate-600">
+            Dashboard category: {report.interpretation.label}
           </p>
           <p className="mt-3 text-sm leading-6">{rationale}</p>
           <p className="mt-3 text-sm leading-6">{recommendation}</p>

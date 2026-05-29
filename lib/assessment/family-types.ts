@@ -72,11 +72,17 @@ export type LawtonScoreResult = {
 };
 
 export type CaregiverInterpretation = {
+  /** Summary badge label (low risk vs further evaluation). */
   label: CaregiverInterpretationLabel;
   filipinoLabel:
     | "Kinakailangan ng karagdagang pagsusuri ng doktor"
     | "Mababang panganib sa pagkaulianin";
+  /** PDF matrix row interpretation (English). */
+  matrixInterpretation: string;
+  matrixInterpretationFil: string;
+  /** PDF matrix action / referral (English). */
   referralGuidance: string;
+  referralGuidanceFil: string;
   plainLanguageSummary: string;
 };
 

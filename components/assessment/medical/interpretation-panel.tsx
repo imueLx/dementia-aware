@@ -5,6 +5,7 @@ import type { ClinicalInterpretationLabel } from "@/lib/assessment/medical-types
 import type { MedicalReportPayload } from "@/lib/assessment/medical-report-types";
 import {
   buildClinicalRationale,
+  buildMatrixInterpretationText,
   buildRecommendationText,
 } from "@/lib/assessment/medical-report-utils";
 import { useCopy } from "@/lib/i18n/use-copy";
@@ -33,10 +34,8 @@ export function InterpretationPanel({
     domainLabels: medicalCopy.moca.domains,
     rationale: medicalResultsCopy.rationale,
   });
-  const recommendation = buildRecommendationText(
-    report,
-    medicalResultsCopy.recommendations,
-  );
+  const matrixInterpretation = buildMatrixInterpretationText(report);
+  const recommendation = buildRecommendationText(report);
 
   return (
     <section
@@ -55,8 +54,11 @@ export function InterpretationPanel({
             <p className="text-sm font-bold uppercase tracking-wide text-purple-100">
               {copy.currentClassification}
             </p>
-            <p className="mt-2 text-3xl font-bold">
-              {report.interpretation.label}
+            <p className="mt-2 text-2xl font-bold leading-snug">
+              {matrixInterpretation}
+            </p>
+            <p className="mt-2 text-sm text-purple-100">
+              {copy.currentClassification}: {report.interpretation.label}
             </p>
           </div>
           <div className="mt-5">

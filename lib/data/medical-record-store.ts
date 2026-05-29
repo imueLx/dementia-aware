@@ -35,6 +35,7 @@ export type MedicalClinicalRecord = {
   };
   interpretation: {
     diagnosticCategory: ClinicalInterpretationLabel;
+    matrixInterpretation?: string;
     summary: string;
     recommendation: string;
   };
