@@ -10,11 +10,11 @@ type ResultPanelProps = {
 };
 
 export function ResultPanel({ copy, result }: ResultPanelProps) {
+  const caregiverCopy = useCopy("caregiver") as CaregiverCopy;
+
   if (!result) {
     return null;
   }
-
-  const caregiverCopy = useCopy("caregiver");
   const interpretationLabel =
     caregiverCopy.interpretationLabels?.[result.interpretation.label];
   const referralGuidance =

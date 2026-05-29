@@ -1,11 +1,11 @@
 import {
-  educationOptions,
   katzItems,
   type ClinicalInterpretationLabel,
   type EducationYearsOption,
   type KatzResponse,
   type MedicalAssessmentPayload,
   type SexAtBirth,
+  type MocaDomainScore,
 } from "./medical-types";
 import type {
   DomainBreakdownRow,

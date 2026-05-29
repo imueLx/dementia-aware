@@ -15,6 +15,7 @@ type FilterBarProps = {
 };
 
 export function FilterBar({ copy, filters, onFiltersChange }: FilterBarProps) {
+  const copyMap = copy as unknown as Record<string, unknown>;
   return (
     <section
       className="rounded-[1.75rem] border border-purple-100 bg-white p-5 shadow-sm sm:p-6"
@@ -60,7 +61,7 @@ export function FilterBar({ copy, filters, onFiltersChange }: FilterBarProps) {
             >
               {ageFilterValues.map((value) => (
                 <option key={value} value={value}>
-                  {copy.ageFilters?.[value] ?? value}
+                  {copyMap.ageFilters?.[value] ?? value}
                 </option>
               ))}
             </select>
@@ -87,7 +88,7 @@ export function FilterBar({ copy, filters, onFiltersChange }: FilterBarProps) {
               <option value="all">{copy.allCategories}</option>
               {diagnosticCategoryValues.map((category) => (
                 <option key={category} value={category}>
-                  {copy.categories?.[category] ?? category}
+                  {copyMap.categories?.[category] ?? category}
                 </option>
               ))}
             </select>

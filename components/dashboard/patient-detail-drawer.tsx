@@ -114,15 +114,23 @@ export function PatientDetailDrawer({
                 {copy.title}
               </h2>
             </div>
-            <button
-              ref={closeButtonRef}
-              type="button"
-              onClick={onClose}
-              aria-label={copy.close}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-purple-200 text-xl font-bold text-purple-800 transition hover:bg-purple-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
-            >
-              x
-            </button>
+            <div className="flex items-center gap-3">
+              <a
+                href={`/api/medical/report/${record.assessmentId}`}
+                className="inline-flex items-center justify-center rounded-full border border-purple-200 bg-white px-3 py-2 text-sm font-bold text-purple-800 transition hover:bg-purple-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
+              >
+                {dashboardCopy.actions?.downloadPdf ?? "Download PDF"}
+              </a>
+              <button
+                ref={closeButtonRef}
+                type="button"
+                onClick={onClose}
+                aria-label={copy.close}
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-purple-200 text-xl font-bold text-purple-800 transition hover:bg-purple-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
+              >
+                x
+              </button>
+            </div>
           </div>
         </div>
 

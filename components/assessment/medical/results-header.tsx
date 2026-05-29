@@ -9,15 +9,20 @@ import { formatAssessmentDateWithLocale } from "@/lib/assessment/medical-report-
 import { ExportActions } from "./export-actions";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { useLanguage } from "@/lib/i18n/use-language";
-import { formatAssessmentDateWithLocale } from "@/lib/assessment/medical-report-utils";
 
 type ResultsHeaderProps = {
   copy: MedicalResultsCopy;
   report: MedicalReportPayload;
   source: MedicalReportSource;
+  recordId?: string;
 };
 
-export function ResultsHeader({ copy, report, source }: ResultsHeaderProps) {
+export function ResultsHeader({
+  copy,
+  report,
+  source,
+  recordId,
+}: ResultsHeaderProps) {
   const { language } = useLanguage();
 
   return (
@@ -36,7 +41,7 @@ export function ResultsHeader({ copy, report, source }: ResultsHeaderProps) {
         </div>
         <div className="flex flex-col gap-3">
           <LanguageToggle />
-          <ExportActions copy={copy.actions} />
+          <ExportActions copy={copy.actions} recordId={recordId} />
         </div>
       </div>
 

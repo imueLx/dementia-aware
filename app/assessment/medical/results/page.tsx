@@ -21,6 +21,7 @@ export default async function MedicalResultsPage({
     <MedicalResultsView
       report={report}
       source={record ? "persisted-record" : "mock-fallback"}
+      recordId={record ? record.recordId : undefined}
     />
   );
 }

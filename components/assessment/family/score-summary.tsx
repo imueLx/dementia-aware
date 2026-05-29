@@ -41,7 +41,7 @@ export function ScoreSummary({
   totals,
   isDemographicsComplete,
 }: ScoreSummaryProps) {
-  const caregiverCopy = useCopy("caregiver");
+  const caregiverCopy = useCopy("caregiver") as CaregiverCopy;
   const interpretationLabel =
     caregiverCopy.interpretationLabels?.[totals.interpretation.label] ??
     totals.interpretation.label;

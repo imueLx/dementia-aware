@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { useCopy } from "@/lib/i18n/use-copy";
 import { useLanguage } from "@/lib/i18n/use-language";
 import type {
@@ -58,14 +59,32 @@ export function DashboardShell({ initialRecords }: DashboardShellProps) {
         );
 
   const handleDownloadPdf = (record: DashboardPatientRecord) => {
-    router.push(`/assessment/medical/results?id=${record.assessmentId}`);
+    // Open the server-side PDF for the given record in a new tab/window
+    if (typeof window !== "undefined") {
+      window.open(`/api/medical/report/${record.assessmentId}`, "_blank");
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut({ redirect: false });
+    } finally {
+      router.push("/");
+    }
   };
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
       <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="flex justify-end">
+        <div className="flex justify-end items-center gap-3">
           <LanguageToggle />
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="rounded-full border border-purple-200 bg-white px-4 py-2 text-sm font-bold text-purple-800 transition hover:bg-purple-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-4"
+          >
+            Logout
+          </button>
         </div>
         <DashboardHeader
           copy={copy.header}

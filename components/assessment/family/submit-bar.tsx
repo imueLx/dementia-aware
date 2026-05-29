@@ -2,6 +2,9 @@
 
 import type { CaregiverCopy } from "@/constants/i18n/caregiver";
 import { useCopy } from "@/lib/i18n/use-copy";
+import { commonCopy } from "@/constants/i18n/common";
+
+type CommonCopy = (typeof commonCopy)[keyof typeof commonCopy];
 
 type SubmitBarProps = {
   copy: CaregiverCopy["submit"];
@@ -14,7 +17,7 @@ export function SubmitBar({
   hasViewedResults,
   isSubmitting,
 }: SubmitBarProps) {
-  const common = useCopy("common");
+  const common = useCopy("common") as CommonCopy;
   return (
     <section className="rounded-[1.75rem] border border-purple-100 bg-white p-5 shadow-sm sm:p-6">
       <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center">

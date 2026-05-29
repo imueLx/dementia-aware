@@ -12,6 +12,7 @@ import { ScoreSummary } from "@/components/assessment/family/score-summary";
 import { SubmitBar } from "@/components/assessment/family/submit-bar";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { useCopy } from "@/lib/i18n/use-copy";
+import type { CaregiverCopy } from "@/constants/i18n/caregiver";
 import {
   buildCaregiverResult,
   computeFamilyAssessmentTotals,
@@ -92,7 +93,7 @@ function hasRequiredDemographics(values: PartialFamilyAssessmentValues) {
 }
 
 export default function FamilyAssessmentPage() {
-  const copy = useCopy("caregiver");
+  const copy = useCopy("caregiver") as CaregiverCopy;
   const [assessmentDate] = useState(() => new Date().toISOString());
   const [result, setResult] = useState<CaregiverResultPayload | null>(null);
 

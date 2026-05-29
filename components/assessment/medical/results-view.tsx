@@ -15,9 +15,14 @@ import { ResultsOverview } from "@/components/assessment/medical/results-overvie
 type ResultsViewProps = {
   report: MedicalReportPayload | null;
   source: MedicalReportSource;
+  recordId?: string;
 };
 
-export function MedicalResultsView({ report, source }: ResultsViewProps) {
+export function MedicalResultsView({
+  report,
+  source,
+  recordId,
+}: ResultsViewProps) {
   const copy = useCopy("medicalResults");
 
   if (!report) {
@@ -55,7 +60,12 @@ export function MedicalResultsView({ report, source }: ResultsViewProps) {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
       <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <ResultsHeader copy={copy} report={report} source={source} />
+        <ResultsHeader
+          copy={copy}
+          report={report}
+          source={source}
+          recordId={recordId}
+        />
 
         <div className="mt-8 grid gap-8">
           <ResultsOverview copy={copy.overview} report={report} />

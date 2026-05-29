@@ -12,6 +12,7 @@ import { ScoreSummary } from "@/components/assessment/medical/score-summary";
 import { SubmitBar } from "@/components/assessment/medical/submit-bar";
 import { LanguageToggle } from "@/components/layout/language-toggle";
 import { useCopy } from "@/lib/i18n/use-copy";
+import type { MedicalCopy } from "@/constants/i18n/medical";
 import { computeMedicalAssessmentTotals } from "@/lib/assessment/medical-scoring";
 import {
   medicalAssessmentSchema,
@@ -100,7 +101,7 @@ function hasRequiredDemographics(values: PartialMedicalAssessmentValues) {
 }
 
 export default function MedicalAssessmentPage() {
-  const copy = useCopy("medical");
+  const copy = useCopy("medical") as MedicalCopy;
   const router = useRouter();
   const [assessmentDate] = useState(() => new Date().toISOString());
   const [submitError, setSubmitError] = useState<string | null>(null);

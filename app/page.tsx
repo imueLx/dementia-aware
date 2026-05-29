@@ -8,11 +8,12 @@ import { Hero } from "@/components/home/hero";
 import { TriviaHub } from "@/components/home/trivia-hub";
 import { Navbar } from "@/components/layout/navbar";
 import { useCopy } from "@/lib/i18n/use-copy";
+import type { HomeCopy } from "@/constants/i18n/home";
 import { useLanguage } from "@/lib/i18n/use-language";
 
 export default function HomePage() {
   const [isAssessmentOpen, setIsAssessmentOpen] = useState(false);
-  const copy = useCopy("home");
+  const copy = useCopy("home") as HomeCopy;
   const { language } = useLanguage();
 
   return (

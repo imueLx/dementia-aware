@@ -54,7 +54,12 @@ export function ScoreSummary({
     },
   ).format(new Date(assessmentDate));
 
-  const interpretationCopy = copy.interpretation?.[totals.interpretation.label];
+  const interpretationCopy = (
+    copy.interpretation as unknown as Record<
+      string,
+      { recommendation?: string; referralAction?: string }
+    >
+  )?.[totals.interpretation.label];
 
   return (
     <aside className="lg:sticky lg:top-24" aria-labelledby="summary-heading">

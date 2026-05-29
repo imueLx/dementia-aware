@@ -55,7 +55,8 @@ export function MocaSection({ copy }: MocaSectionProps) {
           >
             <div className="flex flex-col gap-2 border-b border-slate-200 pb-4 sm:flex-row sm:items-start sm:justify-between">
               <legend className="text-lg font-bold text-slate-950">
-                {copy.domains?.[domain.id] ?? domain.title}
+                {(copy.domains as Record<string, string>)?.[domain.id] ??
+                  domain.title}
               </legend>
               <div className="rounded-full bg-purple-100 px-3 py-1.5 text-sm font-bold text-purple-800">
                 {copy.domainSubtotal}: {domainSubtotals[domain.id] ?? 0} /{" "}
@@ -78,7 +79,8 @@ export function MocaSection({ copy }: MocaSectionProps) {
                       htmlFor={fieldName}
                       className="text-sm font-semibold leading-6 text-slate-800"
                     >
-                      {copy.items?.[item.id] ?? item.label}
+                      {(copy.items as Record<string, string>)?.[item.id] ??
+                        item.label}
                     </label>
                     <div>
                       <select
