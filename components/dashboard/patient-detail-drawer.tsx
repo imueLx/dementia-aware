@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { DashboardCopy } from "@/constants/i18n/dashboard";
 import type { DashboardPatientRecord } from "@/lib/dashboard/dashboard-types";
 import { formatDashboardDate } from "@/lib/dashboard/dashboard-utils";
@@ -10,6 +10,8 @@ import { KatzSummary } from "./katz-summary";
 import { MocaDomainList } from "./moca-domain-list";
 import { useCopy } from "@/lib/i18n/use-copy";
 import { useLanguage } from "@/lib/i18n/use-language";
+import { buildClinicalRationale } from "@/lib/assessment/medical-report-utils";
+import type { MedicalResultsCopy } from "@/constants/i18n/medical-results";
 
 type PatientDetailDrawerProps = {
   copy: DashboardCopy["drawer"];
@@ -24,11 +26,14 @@ export function PatientDetailDrawer({
 }: PatientDetailDrawerProps) {
   const dashboardCopy = useCopy("dashboard");
   const medicalCopy = useCopy("medical");
+  const medicalResultsCopy = useCopy("medicalResults") as MedicalResultsCopy;
   const { language } = useLanguage();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const downloadHref = record
     ? `/api/medical/report/${record.assessmentId}`
     : "#";
+
+  const [showFullDetails, setShowFullDetails] = useState(false);
 
   useEffect(() => {
     if (!record) {
@@ -91,7 +96,7 @@ export function PatientDetailDrawer({
 
   return (
     <div
-      className="fixed inset-0 z-[70] bg-slate-950/45 backdrop-blur-sm"
+      className="fixed inset-0 z-70 bg-slate-950/45 backdrop-blur-sm"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           onClose();
@@ -162,6 +167,12 @@ export function PatientDetailDrawer({
                 </div>
               ))}
             </dl>
+            <p className="mt-3 text-sm text-slate-600">
+              {medicalCopy.demographics.educationHelp}{" "}
+              {language === "fil"
+                ? "Ang kabuuang puntos ay 30; 26 o mas mataas ay itinuturing na normal."
+                : "Total score is 30; 26 or above is considered normal."}
+            </p>
           </section>
 
           <section>
@@ -224,12 +235,103 @@ export function PatientDetailDrawer({
             <h3 className="text-lg font-bold text-slate-950">
               {copy.recommendation}
             </h3>
-            <p className="mt-3 text-base leading-7 text-slate-800">
-              {record.recommendation}
-            </p>
-            <p className="mt-3 text-base leading-7 text-slate-800">
-              {record.referralAction}
-            </p>
+
+            {/* Compact summary */}
+            {(() => {
+              const flaggedDomains = record.mocaDomainBreakdown
+                .filter((d) => {
+                  const percent = d.maxScore === 0 ? 0 : d.score / d.maxScore;
+                  return percent < 0.8;
+                })
+                .map((d) => d.title);
+
+              const functionalFull =
+                record.katzScore >= 5
+                  ? medicalResultsCopy.rationale.functionalNormal
+                  : medicalResultsCopy.rationale.functionalConcern;
+
+              const functionalShort = functionalFull.split(".")[0];
+
+              const referralSentences = record.referralAction
+                ? record.referralAction
+                    .split(/\.\s+/)
+                    .map((s) => s.trim())
+                    .filter(Boolean)
+                : [];
+
+              const compactSummary = `${medicalResultsCopy.rationale.adjustedPrefix} ${record.adjustedMocaScore}/30 — ${functionalShort}.`;
+
+              return (
+                <div className="mt-3">
+                  <p className="text-sm font-semibold text-slate-800">
+                    {compactSummary}
+                  </p>
+
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {flaggedDomains.length > 0 ? (
+                      flaggedDomains.map((d) => (
+                        <span
+                          key={d}
+                          className="rounded-full bg-white/60 px-3 py-1 text-xs font-semibold text-slate-800 ring-1 ring-slate-200"
+                        >
+                          {d}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-sm text-slate-600">
+                        {medicalResultsCopy.rationale.domainNone}
+                      </span>
+                    )}
+                  </div>
+
+                  {referralSentences.length > 0 ? (
+                    <ul className="mt-3 list-disc pl-5 text-sm text-slate-800">
+                      {referralSentences.slice(0, 2).map((s, i) => (
+                        <li key={i}>{s}</li>
+                      ))}
+                    </ul>
+                  ) : null}
+
+                  <button
+                    type="button"
+                    onClick={() => setShowFullDetails((v) => !v)}
+                    className="mt-3 text-sm font-semibold text-purple-700"
+                  >
+                    {showFullDetails
+                      ? "Hide full details"
+                      : "Show full details"}
+                  </button>
+
+                  {showFullDetails ? (
+                    <div className="mt-3 space-y-3 text-sm text-slate-800">
+                      <p>
+                        {buildClinicalRationale(
+                          {
+                            moca: {
+                              adjustedTotal: record.adjustedMocaScore,
+                              domainBreakdown: record.mocaDomainBreakdown,
+                            },
+                            katz: { total: record.katzScore },
+                          } as any,
+                          {
+                            domainLabels: medicalCopy.moca.domains,
+                            rationale: medicalResultsCopy.rationale,
+                          },
+                        )}
+                      </p>
+
+                      <p>{record.recommendation}</p>
+
+                      {record.referralAction &&
+                      record.referralAction.trim() !==
+                        record.recommendation.trim() ? (
+                        <p>{record.referralAction}</p>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })()}
           </section>
         </div>
       </aside>
