@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useCopy } from "@/lib/i18n/use-copy";
@@ -22,41 +22,102 @@ import { KpiCards } from "./kpi-cards";
 import { PatientDetailDrawer } from "./patient-detail-drawer";
 import { PatientTable } from "./patient-table";
 import { LanguageToggle } from "@/components/layout/language-toggle";
+import { DeleteConfirmModal } from "./delete-confirm-modal";
 
 type DashboardShellProps = {
   initialRecords: DashboardPatientRecord[];
 };
 
 export function DashboardShell({ initialRecords }: DashboardShellProps) {
+  const pageSize = 10;
   const copy = useCopy("dashboard");
   const { language } = useLanguage();
   const router = useRouter();
+  const [records, setRecords] =
+    useState<DashboardPatientRecord[]>(initialRecords);
   const [filters, setFilters] = useState<DashboardFilters>(
     emptyDashboardFilters,
   );
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedRecord, setSelectedRecord] =
     useState<DashboardPatientRecord | null>(null);
+  const [pendingDelete, setPendingDelete] =
+    useState<DashboardPatientRecord | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const filteredRecords = useMemo(
-    () => filterDashboardRecords(initialRecords, filters),
-    [initialRecords, filters],
+    () => filterDashboardRecords(records, filters),
+    [records, filters],
   );
-  const kpis = useMemo(
-    () => computeDashboardKpis(initialRecords),
-    [initialRecords],
-  );
-  const hasAnyRecords = initialRecords.length > 0;
+  const totalPages = Math.max(1, Math.ceil(filteredRecords.length / pageSize));
+  const paginatedRecords = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredRecords.slice(start, start + pageSize);
+  }, [currentPage, filteredRecords]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const kpis = useMemo(() => computeDashboardKpis(records), [records]);
+  const hasAnyRecords = records.length > 0;
   const lastUpdated =
-    initialRecords.length === 0
+    records.length === 0
       ? copy.lastUpdatedEmpty
       : formatDashboardDate(
-          [...initialRecords].sort(
+          [...records].sort(
             (a, b) =>
               new Date(b.assessmentDate).getTime() -
               new Date(a.assessmentDate).getTime(),
           )[0].assessmentDate,
           language === "fil" ? "fil-PH" : "en",
         );
+
+  const handleFiltersChange = (nextFilters: DashboardFilters) => {
+    setFilters(nextFilters);
+    setCurrentPage(1);
+  };
+
+  const handleOpenDeleteModal = (record: DashboardPatientRecord) => {
+    setPendingDelete(record);
+  };
+
+  const handleDeleteRecord = async () => {
+    if (!pendingDelete || isDeleting) {
+      return;
+    }
+
+    setIsDeleting(true);
+
+    try {
+      const response = await fetch(
+        `/api/dashboard/medical/${pendingDelete.assessmentId}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Delete request failed");
+      }
+
+      setRecords((prev) =>
+        prev.filter(
+          (record) => record.assessmentId !== pendingDelete.assessmentId,
+        ),
+      );
+      setSelectedRecord((prev) =>
+        prev?.assessmentId === pendingDelete.assessmentId ? null : prev,
+      );
+      setPendingDelete(null);
+    } catch {
+      window.alert(copy.actions.deleteFailed);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleDownloadPdf = (record: DashboardPatientRecord) => {
     // Open the server-side PDF for the given record in a new tab/window
@@ -76,13 +137,13 @@ export function DashboardShell({ initialRecords }: DashboardShellProps) {
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
-      <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="flex justify-end items-center gap-3">
+      <div className="mx-auto grid w-full max-w-7xl gap-6 px-3 py-6 sm:gap-8 sm:px-6 sm:py-8 lg:px-8">
+        <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
           <LanguageToggle />
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-full border border-purple-200 bg-white px-4 py-2 text-sm font-bold text-purple-800 transition hover:bg-purple-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-4"
+            className="rounded-full border border-purple-200 bg-white px-3 py-2 text-xs font-bold text-purple-800 transition hover:bg-purple-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-4 sm:px-4 sm:text-sm"
           >
             Logout
           </button>
@@ -91,7 +152,7 @@ export function DashboardShell({ initialRecords }: DashboardShellProps) {
           copy={copy.header}
           restrictedLabel={copy.shell.restricted}
           medicalOnlyNote={copy.shell.medicalOnly}
-          totalRecords={initialRecords.length}
+          totalRecords={records.length}
           lastUpdated={lastUpdated}
         />
 
@@ -100,7 +161,7 @@ export function DashboardShell({ initialRecords }: DashboardShellProps) {
         <FilterBar
           copy={copy.filters}
           filters={filters}
-          onFiltersChange={setFilters}
+          onFiltersChange={handleFiltersChange}
         />
 
         {!hasAnyRecords ? (
@@ -110,9 +171,23 @@ export function DashboardShell({ initialRecords }: DashboardShellProps) {
         ) : (
           <PatientTable
             copy={copy}
-            records={filteredRecords}
+            records={paginatedRecords}
             onViewDetails={setSelectedRecord}
             onDownloadPdf={handleDownloadPdf}
+            onDelete={handleOpenDeleteModal}
+            deletingRecordId={
+              isDeleting ? (pendingDelete?.assessmentId ?? null) : null
+            }
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalRecords={filteredRecords.length}
+            pageSize={pageSize}
+            onPreviousPage={() =>
+              setCurrentPage((prev) => Math.max(1, prev - 1))
+            }
+            onNextPage={() =>
+              setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+            }
           />
         )}
       </div>
@@ -121,6 +196,18 @@ export function DashboardShell({ initialRecords }: DashboardShellProps) {
         copy={copy.drawer}
         record={selectedRecord}
         onClose={() => setSelectedRecord(null)}
+      />
+
+      <DeleteConfirmModal
+        copy={copy.actions}
+        record={pendingDelete}
+        isDeleting={isDeleting}
+        onCancel={() => {
+          if (!isDeleting) {
+            setPendingDelete(null);
+          }
+        }}
+        onConfirm={handleDeleteRecord}
       />
     </main>
   );

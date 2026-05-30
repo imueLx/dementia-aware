@@ -51,7 +51,7 @@ export function TrackOptionCard({
       tabIndex={0}
       onClick={() => onSelect(id)}
       onKeyDown={handleKeyDown}
-      className={`group flex h-full cursor-pointer flex-col rounded-[1.5rem] border bg-white p-5 text-left shadow-sm transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-4 sm:p-6 ${
+      className={`group flex h-full cursor-pointer flex-col rounded-[1.25rem] border bg-white p-4 text-left shadow-sm transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-4 sm:rounded-3xl sm:p-6 ${
         isSelected
           ? "border-purple-600 bg-purple-50/70 ring-2 ring-purple-200"
           : "border-purple-100 hover:-translate-y-0.5 hover:border-purple-300 hover:shadow-lg hover:shadow-purple-100"
@@ -73,18 +73,18 @@ export function TrackOptionCard({
         </span>
       </div>
 
-      <h3 className="mt-5 text-xl font-bold leading-snug text-slate-950">
+      <h3 className="mt-3 text-lg font-bold leading-snug text-slate-950 sm:mt-5 sm:text-xl">
         {track.label}
       </h3>
-      <p className="mt-3 text-base leading-7 text-slate-700">
+      <p className="mt-2 text-sm leading-6 text-slate-700 sm:mt-3 sm:text-base sm:leading-7">
         {track.description}
       </p>
 
-      <ul className="mt-5 grid gap-2">
+      <ul className="mt-3 grid gap-1.5 sm:mt-5 sm:gap-2">
         {track.highlights.map((highlight) => (
           <li
             key={highlight}
-            className="flex gap-2 text-sm leading-6 text-slate-700"
+            className="flex gap-2 text-xs leading-5 text-slate-700 sm:text-sm sm:leading-6"
           >
             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-600" />
             <span>{highlight}</span>
@@ -92,7 +92,7 @@ export function TrackOptionCard({
         ))}
       </ul>
 
-      <dl className="mt-6 grid gap-3 border-t border-purple-100 pt-5">
+      <dl className="mt-4 hidden gap-3 border-t border-purple-100 pt-5 sm:mt-6 sm:grid">
         {details.map((detail) => (
           <div key={detail.label} className="rounded-2xl bg-white/80 p-3">
             <dt className="text-xs font-bold uppercase tracking-wide text-purple-700">
@@ -105,9 +105,9 @@ export function TrackOptionCard({
         ))}
       </dl>
 
-      <div className="mt-auto pt-6">
+      <div className="mt-auto pt-4 sm:pt-6">
         {isSelected ? (
-          <p className="mb-3 text-sm font-bold text-purple-800">
+          <p className="mb-2 text-xs font-bold text-purple-800 sm:mb-3 sm:text-sm">
             {selectedLabel}
           </p>
         ) : null}
@@ -117,7 +117,7 @@ export function TrackOptionCard({
             event.stopPropagation();
             onContinue(id);
           }}
-          className={`inline-flex min-h-12 w-full items-center justify-center rounded-full px-5 text-sm font-bold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-4 ${
+          className={`hidden min-h-12 w-full items-center justify-center rounded-full px-5 text-sm font-bold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-4 sm:inline-flex ${
             isSelected
               ? "bg-purple-700 text-white shadow-lg shadow-purple-200 hover:bg-purple-800"
               : "border border-purple-200 bg-white text-purple-800 hover:bg-purple-50"

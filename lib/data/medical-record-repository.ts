@@ -72,6 +72,31 @@ export async function getMedicalRecordById(recordId: string) {
   return record;
 }
 
+export async function deleteMedicalRecordById(recordId: string) {
+  if (!(await canReadClinicalDashboard())) {
+    return false;
+  }
+
+  if (USE_MONGO) {
+    const coll = await getMedicalCollection();
+    const result = await coll.deleteOne({
+      recordId,
+      source: "medical-professional",
+    });
+
+    return result.deletedCount > 0;
+  }
+
+  const store = getMedicalRecordStore();
+  const record = store.get(recordId);
+
+  if (!record || record.source !== "medical-professional") {
+    return false;
+  }
+
+  return store.delete(recordId);
+}
+
 export async function filterMedicalRecords(filters: DashboardFilters) {
   return filterMedicalRecordsForDashboard(await listMedicalRecords(), filters);
 }

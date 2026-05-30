@@ -97,7 +97,7 @@ export function FilterBar({ copy, filters, onFiltersChange }: FilterBarProps) {
         <button
           type="button"
           onClick={() => onFiltersChange(emptyDashboardFilters)}
-          className="inline-flex min-h-12 items-center justify-center rounded-full border border-purple-200 bg-white px-5 text-sm font-bold text-purple-800 transition hover:bg-purple-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-4"
+          className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-purple-200 bg-white px-5 text-sm font-bold text-purple-800 transition hover:bg-purple-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-4 lg:w-auto"
         >
           {copy.reset}
         </button>

@@ -104,7 +104,7 @@ export function AssessmentEntryModal({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-end bg-slate-950/45 p-3 opacity-100 backdrop-blur-sm transition-opacity duration-200 sm:items-center sm:p-6"
+      className="fixed inset-0 z-60 flex items-end bg-slate-950/45 p-2 opacity-100 backdrop-blur-sm transition-opacity duration-200 sm:items-center sm:p-6"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           onClose();
@@ -117,22 +117,22 @@ export function AssessmentEntryModal({
         aria-modal="true"
         aria-labelledby="assessment-entry-title"
         aria-describedby="assessment-entry-description assessment-entry-notice"
-        className="mx-auto max-h-[94svh] w-full max-w-6xl animate-[modalEnter_180ms_ease-out] overflow-y-auto rounded-t-[1.75rem] bg-white p-5 shadow-2xl sm:rounded-[1.75rem] sm:p-8"
+        className="mx-auto flex max-h-[96svh] w-full max-w-6xl animate-[modalEnter_180ms_ease-out] flex-col overflow-hidden rounded-t-[1.75rem] bg-white shadow-2xl sm:max-h-[94svh] sm:rounded-[1.75rem]"
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-4 p-4 sm:p-8 sm:pb-6">
           <div>
             <p className="text-sm font-bold uppercase tracking-wide text-purple-700">
               {modalCopy.eyebrow}
             </p>
             <h2
               id="assessment-entry-title"
-              className="mt-2 text-2xl font-bold text-slate-950 sm:text-3xl"
+              className="mt-2 text-xl font-bold text-slate-950 sm:text-3xl"
             >
               {modalCopy.title}
             </h2>
             <p
               id="assessment-entry-description"
-              className="mt-3 max-w-3xl text-base leading-7 text-slate-700"
+              className="mt-2 max-w-3xl text-sm leading-6 text-slate-700 sm:mt-3 sm:text-base sm:leading-7"
             >
               {modalCopy.description}
             </p>
@@ -142,7 +142,7 @@ export function AssessmentEntryModal({
             type="button"
             onClick={onClose}
             aria-label={modalCopy.closeLabel}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-purple-200 text-xl text-purple-800 transition hover:bg-purple-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-purple-200 text-lg text-purple-800 transition hover:bg-purple-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-2 sm:h-11 sm:w-11 sm:text-xl"
           >
             <span aria-hidden="true">x</span>
           </button>
@@ -151,29 +151,31 @@ export function AssessmentEntryModal({
         <div
           role="radiogroup"
           aria-label={modalCopy.title}
-          className="mt-7 grid gap-4 lg:grid-cols-2"
+          className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 sm:px-8 sm:pb-6"
         >
-          <TrackOptionCard
-            id="professional"
-            track={tracks.professional}
-            labels={modalCopy.comparisonLabels}
-            isSelected={selectedTrack === "professional"}
-            selectedLabel={modalCopy.selectedLabel}
-            onSelect={setSelectedTrack}
-            onContinue={continueToTrack}
-          />
-          <TrackOptionCard
-            id="caregiver"
-            track={tracks.caregiver}
-            labels={modalCopy.comparisonLabels}
-            isSelected={selectedTrack === "caregiver"}
-            selectedLabel={modalCopy.selectedLabel}
-            onSelect={setSelectedTrack}
-            onContinue={continueToTrack}
-          />
+          <div className="grid gap-3 pb-2 sm:gap-4 lg:grid-cols-2">
+            <TrackOptionCard
+              id="professional"
+              track={tracks.professional}
+              labels={modalCopy.comparisonLabels}
+              isSelected={selectedTrack === "professional"}
+              selectedLabel={modalCopy.selectedLabel}
+              onSelect={setSelectedTrack}
+              onContinue={continueToTrack}
+            />
+            <TrackOptionCard
+              id="caregiver"
+              track={tracks.caregiver}
+              labels={modalCopy.comparisonLabels}
+              isSelected={selectedTrack === "caregiver"}
+              selectedLabel={modalCopy.selectedLabel}
+              onSelect={setSelectedTrack}
+              onContinue={continueToTrack}
+            />
+          </div>
         </div>
 
-        <div className="mt-6 grid gap-4 border-t border-purple-100 pt-5 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div className="sticky bottom-0 z-10 grid gap-3 border-t border-purple-100 bg-white/95 p-4 backdrop-blur-sm sm:gap-4 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-center">
           <div
             id="assessment-entry-notice"
             className="rounded-2xl border border-amber-200 bg-amber-50 p-4"
@@ -188,7 +190,7 @@ export function AssessmentEntryModal({
           <button
             type="button"
             onClick={() => continueToTrack(selectedTrack)}
-            className="inline-flex min-h-12 items-center justify-center rounded-full bg-purple-700 px-6 text-base font-bold text-white shadow-lg shadow-purple-200 transition hover:bg-purple-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-4"
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-purple-700 px-6 text-base font-bold text-white shadow-lg shadow-purple-200 transition hover:bg-purple-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-4 lg:w-auto"
           >
             {modalCopy.continueSelected}
           </button>

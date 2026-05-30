@@ -323,7 +323,7 @@ function KatzGuideCard({ item }: { item: KatzGuideItem }) {
 
 function InterpretationCard({ item }: { item: InterpretationRow }) {
   return (
-    <article className="rounded-[1.5rem] border border-purple-100 bg-white p-4 shadow-sm sm:p-5">
+    <article className="rounded-3xl border border-purple-100 bg-white p-4 shadow-sm sm:p-5">
       <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
         <div className="rounded-2xl bg-slate-50 p-3">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-purple-700">
@@ -441,7 +441,7 @@ function MocaGuideButton() {
 
   return (
     <>
-      <div className="fixed bottom-4 right-4 z-50 w-14 sm:bottom-6 sm:right-6 sm:w-[min(18rem,calc(100vw-2.5rem))]">
+      <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
         <button
           type="button"
           onClick={() => {
@@ -449,62 +449,52 @@ function MocaGuideButton() {
             setIsOpen(true);
           }}
           aria-label="Open MOCA-P guide"
-          className="group block w-14 overflow-hidden rounded-[1.4rem] border border-purple-200 bg-white text-left shadow-[0_18px_50px_rgba(15,23,42,0.16)] transition hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(15,23,42,0.2)] focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-4 sm:w-full"
+          className="group inline-flex h-12 items-center gap-2.5 rounded-full border border-slate-300 bg-white px-3 text-left shadow-[0_12px_28px_rgba(15,23,42,0.12)] transition hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-[0_16px_32px_rgba(15,23,42,0.16)] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-4 sm:h-12 sm:px-4"
         >
-          <div className="flex h-14 items-center justify-center bg-purple-700 text-white sm:hidden">
+          <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-600 text-white">
             <svg
               aria-hidden="true"
               viewBox="0 0 24 24"
-              className="h-6 w-6"
+              className="h-4 w-4"
               fill="none"
               stroke="currentColor"
-              strokeWidth="1.8"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
-              <path d="M14 3v5h5" />
+              <path d="M9 4h6" />
+              <path d="M10 3h4v2h-4z" />
+              <rect x="6" y="5" width="12" height="16" rx="2" ry="2" />
+              <path d="M12 10v6" />
               <path d="M9 13h6" />
-              <path d="M9 16h4" />
             </svg>
-            <span className="sr-only">Open MOCA-P guide</span>
-          </div>
-
-          <div className="hidden sm:block">
-            <div className="relative aspect-[4/3] w-full bg-slate-100">
-              <Image
-                src="/Moca-guide-english.jpg"
-                alt="MOCA-P guide preview"
-                fill
-                sizes="(max-width: 640px) calc(100vw - 2rem), 18rem"
-                className="object-cover transition duration-300 group-hover:scale-[1.02]"
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent p-3">
-                <p className="text-xs font-bold uppercase tracking-[0.24em] text-white/85">
-                  Guide MOCA-p
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between gap-3 px-4 py-3">
-              <div>
-                <p className="text-sm font-bold text-slate-950">
-                  Quick reference
-                </p>
-                <p className="text-xs leading-5 text-slate-600">
-                  Tap to open the full guide.
-                </p>
-              </div>
-              <span className="shrink-0 rounded-full bg-purple-700 px-3 py-1 text-xs font-bold text-white">
-                Open
-              </span>
-            </div>
-          </div>
+          </span>
+          <span className="hidden h-7 w-7 shrink-0 items-center justify-center rounded-full bg-teal-100 text-teal-700 sm:inline-flex">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-3.5 w-3.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="8" />
+              <path d="M12 8v8" />
+              <path d="M8 12h8" />
+            </svg>
+          </span>
+          <span className="text-xs font-bold uppercase tracking-wide text-slate-800 sm:text-sm">
+            Clinical Guide
+          </span>
+          <span className="sr-only">Open MOCA-P guide</span>
         </button>
       </div>
 
       {isOpen ? (
         <div
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6"
+          className="fixed inset-0 z-70 flex items-center justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
               setIsOpen(false);
@@ -516,7 +506,7 @@ function MocaGuideButton() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="moca-guide-title"
-            className="mx-auto flex max-h-[94svh] w-full max-w-6xl flex-col overflow-hidden rounded-[1.5rem] bg-white shadow-2xl sm:rounded-[1.75rem]"
+            className="mx-auto flex max-h-[94svh] w-full max-w-6xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl sm:rounded-3.5xl"
           >
             <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-4 py-4 sm:px-6">
               <div>
@@ -597,9 +587,9 @@ function MocaGuideButton() {
                   </div>
 
                   <div className="border-b border-slate-200 bg-slate-50 p-4 sm:p-6">
-                    <div className="mx-auto max-w-3xl overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-sm">
+                    <div className="mx-auto max-w-3xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
                       <div
-                        className="relative aspect-[8.5/11] bg-white"
+                        className="relative aspect-8.5/11 bg-white"
                         style={{
                           width: `${zoomLevel * 100}%`,
                           touchAction: "pan-x pan-y pinch-zoom",
@@ -751,7 +741,7 @@ export default function MedicalAssessmentPage() {
           <LanguageToggle />
         </div>
 
-        <header className="mt-8 rounded-[2rem] border border-purple-100 bg-white p-6 shadow-sm sm:p-8">
+        <header className="mt-8 rounded-4xl border border-purple-100 bg-white p-6 shadow-sm sm:p-8">
           <p className="text-sm font-bold uppercase tracking-wide text-purple-700">
             {copy.page.eyebrow}
           </p>

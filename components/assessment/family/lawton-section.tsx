@@ -34,15 +34,6 @@ type LawtonScaleConfig = {
   categories: LawtonScaleCategory[];
 };
 
-type MiniCogGuideConfig = {
-  previewSrc: string;
-  previewAlt: string;
-  imageSrc: string;
-  imageAlt: string;
-  title: string;
-  intro: string;
-};
-
 const dialogFocusableSelector = [
   "a[href]",
   "button:not([disabled])",
@@ -764,7 +755,7 @@ export function LawtonSection({ copy }: LawtonSectionProps) {
       className="rounded-[1.75rem] border border-purple-100 bg-white p-5 shadow-sm sm:p-6"
       aria-labelledby="lawton-heading"
     >
-      <div className="fixed bottom-4 right-4 z-50 w-14 sm:bottom-6 sm:right-6 sm:w-[min(18rem,calc(100vw-2.5rem))]">
+      <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
         <button
           type="button"
           onClick={() => {
@@ -772,58 +763,46 @@ export function LawtonSection({ copy }: LawtonSectionProps) {
             setIsGuideOpen(true);
           }}
           aria-label="Open Lawton IADL image guide"
-          className="group block w-14 overflow-hidden rounded-[1.4rem] border border-purple-200 bg-white text-left shadow-[0_18px_50px_rgba(15,23,42,0.16)] transition hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(15,23,42,0.2)] focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:ring-offset-4 sm:w-full"
+          className="group inline-flex h-12 items-center gap-2.5 rounded-full border border-slate-300 bg-white px-3 text-left shadow-[0_12px_28px_rgba(15,23,42,0.12)] transition hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-[0_16px_32px_rgba(15,23,42,0.16)] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-4 sm:h-12 sm:px-4"
         >
-          <div className="flex h-14 items-center justify-center bg-purple-700 text-white sm:hidden">
+          <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-600 text-white">
             <svg
               aria-hidden="true"
               viewBox="0 0 24 24"
-              className="h-6 w-6"
+              className="h-4 w-4"
               fill="none"
               stroke="currentColor"
-              strokeWidth="1.8"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <path d="M4 6a2 2 0 0 1 2-2h5.5a2.5 2.5 0 0 1 2.5 2.5V20H6a2 2 0 0 1-2-2V6Z" />
-              <path d="M20 6a2 2 0 0 0-2-2h-5.5a2.5 2.5 0 0 0-2.5 2.5V20h8a2 2 0 0 0 2-2V6Z" />
-              <path d="M12 6v14" />
-              <path d="M7 9h3" />
-              <path d="M14 9h3" />
-              <path d="M7 12h3" />
-              <path d="M14 12h3" />
+              <path d="M9 4h6" />
+              <path d="M10 3h4v2h-4z" />
+              <rect x="6" y="5" width="12" height="16" rx="2" ry="2" />
+              <path d="M12 10v6" />
+              <path d="M9 13h6" />
             </svg>
-            <span className="sr-only">Open Lawton IADL image guide</span>
-          </div>
-
-          <div className="hidden sm:block">
-            <div className="relative aspect-4/3 w-full bg-slate-100">
-              <Image
-                src={lawtonGuideImage.src}
-                alt={lawtonGuideImage.alt}
-                fill
-                sizes="(max-width: 640px) calc(100vw - 2rem), 18rem"
-                className="object-cover transition duration-300 group-hover:scale-[1.02]"
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-slate-950/80 via-slate-950/30 to-transparent p-3">
-                <p className="text-xs font-bold uppercase tracking-[0.24em] text-white/85">
-                  {language === "fil" ? "Tagalog" : "English"} Lawton image
-                  guide
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between gap-3 px-4 py-3">
-              <div>
-                <p className="text-sm font-bold text-slate-950">
-                  Quick image reference
-                </p>
-                <p className="text-xs leading-5 text-slate-600">Tap to open.</p>
-              </div>
-              <span className="shrink-0 rounded-full bg-purple-700 px-3 py-1 text-xs font-bold text-white">
-                Open
-              </span>
-            </div>
-          </div>
+          </span>
+          <span className="hidden h-7 w-7 shrink-0 items-center justify-center rounded-full bg-teal-100 text-teal-700 sm:inline-flex">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-3.5 w-3.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="8" />
+              <path d="M12 8v8" />
+              <path d="M8 12h8" />
+            </svg>
+          </span>
+          <span className="text-xs font-bold uppercase tracking-wide text-slate-800 sm:text-sm">
+            Clinical Guide
+          </span>
+          <span className="sr-only">Open Lawton IADL image guide</span>
         </button>
       </div>
 
